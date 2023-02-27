@@ -23,5 +23,21 @@ public class DatabaseMethods {
 
     }
 
-    
+    public boolean addNewUser(){
+        boolean ok = true;
+
+        //lägger till i database, returnerar true om person blev tillagd
+
+        return ok;
+    }
+
+    public boolean deleteUser(){
+        boolean ok = true;
+
+        //tar bort användare från databasen
+
+        return ok;
+    }
+
+
 }
