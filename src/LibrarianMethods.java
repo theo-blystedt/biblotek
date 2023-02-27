@@ -7,7 +7,7 @@ public class LibrarianMethods {
     //suspend user kan göras i main genom att uppdatera status.
 
     public void deleteUser(int id){
-
+        //tar bort användare från databasen beroende på id
     }
 
     public void returnItem(int id, String title){

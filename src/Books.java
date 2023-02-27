@@ -3,14 +3,14 @@ public class Books {
     String title;
     int isbn;
     int available; // de som inte är utlånade
-    int loaned; //utlånade
+    int onLoan; //utlånade
 
 
     Books(String title, int isbn, int available, int loaned){
         this.title = title;
         this.isbn = isbn;
         this.available = available;
-        this.loaned = loaned;
+        this.onLoan = loaned;
     }
 
     public String getTitle() {
@@ -38,10 +38,10 @@ public class Books {
     }
 
     public int getLoaned() {
-        return loaned;
+        return onLoan;
     }
 
     public void setLoaned(int loaned) {
-        this.loaned = loaned;
+        this.onLoan = loaned;
     }
 }
