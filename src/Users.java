@@ -2,18 +2,19 @@ public class Users {
     int id;
     String fName;
     String lName;
-    String title; //bestämmer hur många böcker man kan låna
+    int titleId; //bestämmer hur många böcker man kan låna och vem som är admin. Tönker 1 för admin och sedan
+    //resten för typ av student, tex phd kan låna 5 böcker osv
     int sNum; //personnummber
     int numOfBorrowedBooks;
     boolean status; //hur man suspendar användare, true == suspended. Svårt att se hur man implementerar 15 dagar
 
 
 
-    Users(int id, String fname, String lName, String title, int sNum, int numOfBorrowedBooks, boolean status){
+    Users(int id, String fname, String lName, int titleId, int sNum, int numOfBorrowedBooks, boolean status){
         this.id = id;
         this.fName = fname;
         this.lName = lName;
-        this.title = title;
+        this.titleId = titleId;
         this.sNum = sNum;
         this.numOfBorrowedBooks = numOfBorrowedBooks;
         this.status = status;
@@ -48,12 +49,12 @@ public class Users {
         this.lName = lName;
     }
 
-    public String getTitle() {
-        return title;
+    public int getTitleId() {
+        return titleId;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(int titleId) {
+        this.titleId = titleId;
     }
 
     public int getsNum() {
