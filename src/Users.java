@@ -1,3 +1,5 @@
+import java.util.Date;
+
 public class Users {
     int id;
     String fName;
@@ -6,10 +8,12 @@ public class Users {
     //resten för typ av student, tex phd kan låna 5 böcker osv
     int sNum; //personnummer
     //int numOfBorrowedBooks; //behövs inte kör count på databas rader
-
     Loan loan;
     Books book;
-    SuspentionStatus suspentionStatus;
+    Date suspensionStart;
+    Date suspensionEnd;
+    int warnings;
+    boolean isSuspended;
 
 
 
@@ -25,8 +29,6 @@ public class Users {
     Users(){
         this.book = new Books();
         this.loan = new Loan();
-        this.suspentionStatus = new SuspentionStatus();
-
     }
 
     public void lendItem(String title) {
@@ -61,9 +63,6 @@ public class Users {
         return titleId;
     }
 
-    public void setTitle(int titleId) {
-        this.titleId = titleId;
-    }
 
     public int getsNum() {
         return sNum;
@@ -73,6 +72,40 @@ public class Users {
         this.sNum = sNum;
     }
 
-
+    public void setTitleId(int titleId) {
+        this.titleId = titleId;
     }
+
+    public Date getSuspensionStart() {
+        return suspensionStart;
+    }
+
+    public void setSuspensionStart(Date suspensionStart) {
+        this.suspensionStart = suspensionStart;
+    }
+
+    public Date getSuspensionEnd() {
+        return suspensionEnd;
+    }
+
+    public void setSuspensionEnd(Date suspensionEnd) {
+        this.suspensionEnd = suspensionEnd;
+    }
+
+    public int getWarnings() {
+        return warnings;
+    }
+
+    public void setWarnings(int warnings) {
+        this.warnings = warnings;
+    }
+
+    public boolean isSuspended() {
+        return isSuspended;
+    }
+
+    public void setSuspended(boolean suspended) {
+        isSuspended = suspended;
+    }
+}
 

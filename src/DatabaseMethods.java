@@ -84,6 +84,8 @@ public class DatabaseMethods {
         preparedStatement.setInt(5,user.getsNum());
         int rowsInserted = preparedStatement.executeUpdate();
 
+        //kanske kan skippa id eftersom att id är autoincrement i databasen
+
         if(rowsInserted <= 0){
             ok = false;
         }
@@ -95,7 +97,7 @@ public class DatabaseMethods {
         return ok;
     }
 
-    public boolean deleteUser(){
+    public boolean deleteUser(int id){
         boolean ok = true;
 
         //tar bort användare från databasen

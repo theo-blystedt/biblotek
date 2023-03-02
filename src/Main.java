@@ -12,7 +12,14 @@ public class Main {
 
         List l = m.listOfUsers();
 
-        System.out.println();
+        System.out.println(l);
+
+
+        /////
+
+        //Users user = new Users(3334,"Erik", "Eriksson", 3, 990725); funkar!
+
+        //m.addNewUser(user); funkar!!
 
 
     }
