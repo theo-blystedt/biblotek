@@ -4,9 +4,9 @@ public class Users {
     String lName;
     int titleId; //bestämmer hur många böcker man kan låna och vem som är admin. Tönker 1 för admin och sedan
     //resten för typ av student, tex phd kan låna 5 böcker osv
-    int sNum; //personnummber
-    int numOfBorrowedBooks;
-    boolean status; //hur man suspendar användare, true == suspended. Svårt att se hur man implementerar 15 dagar
+    int sNum; //personnummer
+    //int numOfBorrowedBooks; //behövs inte kör count på databas rader
+
 
 
 
@@ -16,8 +16,6 @@ public class Users {
         this.lName = lName;
         this.titleId = titleId;
         this.sNum = sNum;
-        this.numOfBorrowedBooks = numOfBorrowedBooks;
-        this.status = status;
 
     }
 
@@ -65,19 +63,6 @@ public class Users {
         this.sNum = sNum;
     }
 
-    public int getNumOfBorrowedBooks() {
-        return numOfBorrowedBooks;
+
     }
 
-    public void setNumOfBorrowedBooks(int numOfBorrowedBooks) {
-        this.numOfBorrowedBooks = numOfBorrowedBooks;
-    }
-
-    public boolean isStatus() {
-        return status;
-    }
-
-    public void setStatus(boolean status) {
-        this.status = status;
-    }
-}
