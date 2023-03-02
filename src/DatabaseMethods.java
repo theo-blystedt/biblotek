@@ -45,11 +45,27 @@ public class DatabaseMethods {
 
     }
 
-    public List<Books> listOfBooks(){
+    public List<Books> listOfBooks() throws SQLException, ClassNotFoundException {
 
         List<Books> listOfBooks = new ArrayList<>();
 
-        //hämta alla böcker och lägg i listan
+        Connection connection = getConnection();
+        Statement statement = connection.createStatement();
+        String query = "select * from BooksDB";
+        ResultSet resultSet = statement.executeQuery(query);
+
+        while (resultSet.next()){
+            int isbn = resultSet.getInt("isbn");
+            String title = resultSet.getString("title");
+            int available = resultSet.getInt("available");
+            int onLoan = resultSet.getInt("onLoan");
+
+            Books books = new Books(title,isbn,available,onLoan);
+            listOfBooks.add(books);
+        }
+        resultSet.close();
+        statement.close();
+        connection.close();
 
         return listOfBooks;
 
