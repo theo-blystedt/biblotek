@@ -7,6 +7,10 @@ public class SuspentionStatus {
     int warnings;
     boolean isSuspended;
 
+    SuspentionStatus(){
+
+    }
+
     SuspentionStatus(int uId, Date startDate, Date endDate, int warnings, boolean isSuspended){
         this.uId = uId;
         this.startDate = startDate;

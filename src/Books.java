@@ -5,6 +5,10 @@ public class Books {
     int available; // de som inte är utlånade
     int onLoan; //utlånade
 
+    Books(){
+
+    }
+
 
     Books(String title, int isbn, int available, int loaned){
         this.title = title;

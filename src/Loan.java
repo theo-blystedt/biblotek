@@ -6,6 +6,10 @@ public class Loan {
     int loanId;
     Date date;
 
+    Loan(){
+
+    }
+
     Loan(int userId, int isbn, Date date, int loanId){
         this.userId = userId;
         this.isbn = isbn;

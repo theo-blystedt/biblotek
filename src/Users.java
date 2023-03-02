@@ -7,15 +7,25 @@ public class Users {
     int sNum; //personnummer
     //int numOfBorrowedBooks; //behövs inte kör count på databas rader
 
+    Loan loan;
+    Books book;
+    SuspentionStatus suspentionStatus;
 
 
 
-    Users(int id, String fname, String lName, int titleId, int sNum, int numOfBorrowedBooks, boolean status){
+    Users(int id, String fname, String lName, int titleId, int sNum){
         this.id = id;
         this.fName = fname;
         this.lName = lName;
         this.titleId = titleId;
         this.sNum = sNum;
+
+    }
+
+    Users(){
+        this.book = new Books();
+        this.loan = new Loan();
+        this.suspentionStatus = new SuspentionStatus();
 
     }
 
