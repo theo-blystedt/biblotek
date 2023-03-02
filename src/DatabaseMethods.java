@@ -71,10 +71,25 @@ public class DatabaseMethods {
 
     }
 
-    public boolean addNewUser(){
+    public boolean addNewUser(Users user) throws SQLException, ClassNotFoundException {
         boolean ok = true;
 
-        //lägger till i database, returnerar true om person blev tillagd
+        Connection connection = getConnection();
+        String query = "INSERT INTO UserDB (id,fName,lName,titleId,sNum) values (?,?,?,?,?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setInt(1,user.getId());
+        preparedStatement.setString(2,user.getfName());
+        preparedStatement.setString(3, user.getlName());
+        preparedStatement.setInt(4,user.getTitleId());
+        preparedStatement.setInt(5,user.getsNum());
+        int rowsInserted = preparedStatement.executeUpdate();
+
+        if(rowsInserted <= 0){
+            ok = false;
+        }
+
+        preparedStatement.close();
+        connection.close();
 
         return ok;
     }
