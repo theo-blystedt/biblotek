@@ -6,8 +6,8 @@ import java.sql.*;
 public class DatabaseMethods {
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException{
-        Class.forName("com.mysql.jdbc.Driver");
-        String url = "jdbc:mysql://localhost:3306/194.47.178.142";
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        String url = "jdbc:mysql://194.47.178.142:3306/1ik173v23-4";
         String username = "tb222zg";
         String password = "tb222zg";
         Connection connection = DriverManager.getConnection(url, username, password);
@@ -90,6 +90,7 @@ public class DatabaseMethods {
 
         preparedStatement.close();
         connection.close();
+
 
         return ok;
     }
