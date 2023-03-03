@@ -123,42 +123,59 @@ public class DatabaseMethods {
     }
 
     public boolean deleteUser(int id) throws SQLException, ClassNotFoundException {
-
         boolean deleted = false;
 
-
         Connection connection = getConnection();
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
         List<Loan> listOfLoans = listOfLoans();
 
+        for (Loan e : listOfLoans) {
+            int uid = e.getUserId();
+            if (uid == id) {
+                return deleted;
+            }
+        }
+
         try {
-            PreparedStatement stmt = connection.prepareStatement("SELECT * FROM UserDB WHERE id = ?");
+            stmt = connection.prepareStatement("SELECT FROM UserDB WHERE id = ?");
             stmt.setInt(1, id);
-            ResultSet resultSet = stmt.executeQuery();
 
-            if (resultSet.next()) {
-                // kolla om användaren har lån
-                for (Loan loan : listOfLoans) {
-                    if (loan.getUserId() == id) {
-                        System.out.println("User with id: " + id + " has loans and cannot be deleted");
-                        return false;
-                    }
-                }
+            resultSet = stmt.executeQuery();
 
+            if(resultSet.next()){
                 stmt = connection.prepareStatement("DELETE FROM UserDB WHERE id = ?");
                 stmt.setInt(1, id);
-                stmt.executeUpdate();
+
+                resultSet = stmt.executeQuery();
                 deleted = true;
-            } else {
-                System.out.println("User with id: " + id + " does not exist");
             }
-
-
-            stmt.close();
-            resultSet.close();
+            else{
+                System.out.println("User with id: " + id + "does not exist");
+            }
         } catch (SQLException e) {
             System.out.println("Error deleting user from database: " + e.getMessage());
             throw e;
         } finally {
+
+            try {
+                if (stmt != null) {
+                    stmt.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error closing statement: " + e.getMessage());
+                throw e;
+            }
+
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                System.out.println("Error closing result set: " + e.getMessage());
+                throw e;
+            }
 
             try {
                 if (connection != null) {
