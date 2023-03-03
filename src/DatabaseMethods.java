@@ -190,6 +190,42 @@ public class DatabaseMethods {
         return deleted;
     }
 
+    public boolean loanBook(int isbn){
+        boolean loaned = false;
+
+
+
+
+        return loaned;
+    }
+
+    public int getLoanQuantity(int id) throws ClassNotFoundException {
+
+        //räknar mänden lån som ett id har i Loans. Detta kommer användas sedan för att kontrollera så att personer inte lånar mer än de får beroende på id.
+
+        int amount = 0;
+
+        try {
+
+            Connection connection = getConnection();
+            String query = "SELECT COUNT(*) FROM Loans WHERE userId = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            preparedStatement.setInt(1,id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            if(rs.next()){
+                amount = rs.getInt(1);
+            }
+            rs.close();
+            preparedStatement.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return amount;
+    }
+
     //public Users userStatus(int id){ //kolla status på användare typ roll, varningar, lån osv.
 
     // Users x = new Users();

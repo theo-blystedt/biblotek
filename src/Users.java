@@ -10,10 +10,11 @@ public class Users {
     //int numOfBorrowedBooks; //behövs inte kör count på databas rader
     Loan loan;
     Books book;
-    Date suspensionStart;
-    Date suspensionEnd;
+    Date suspentionStart;
+    Date suspentionEnd;
     int warnings;
     boolean isSuspended;
+    int suspentionCount;
 
 
 
@@ -23,13 +24,12 @@ public class Users {
         this.lName = lName;
         this.titleId = titleId;
         this.sNum = sNum;
-
+        this.suspentionStart = null;
+        this.suspentionEnd = null;
+        this.warnings = 0;
+        this.suspentionCount = 0;
     }
 
-    Users(){
-        this.book = new Books();
-        this.loan = new Loan();
-    }
 
     public void lendItem(String title) {
 
@@ -76,20 +76,20 @@ public class Users {
         this.titleId = titleId;
     }
 
-    public Date getSuspensionStart() {
-        return suspensionStart;
+    public Date getSuspentionStart() {
+        return suspentionStart;
     }
 
-    public void setSuspensionStart(Date suspensionStart) {
-        this.suspensionStart = suspensionStart;
+    public void setSuspentionStart(Date suspentionStart) {
+        this.suspentionStart = suspentionStart;
     }
 
-    public Date getSuspensionEnd() {
-        return suspensionEnd;
+    public Date getSuspentionEnd() {
+        return suspentionEnd;
     }
 
-    public void setSuspensionEnd(Date suspensionEnd) {
-        this.suspensionEnd = suspensionEnd;
+    public void setSuspentionEnd(Date suspentionEnd) {
+        this.suspentionEnd = suspentionEnd;
     }
 
     public int getWarnings() {
