@@ -201,7 +201,7 @@ public class DatabaseMethods {
 
     public int getLoanQuantity(int id) throws ClassNotFoundException {
 
-        //räknar mänden lån som ett id har i Loans. Detta kommer användas sedan för att kontrollera så att personer inte lånar mer än de får beroende på id.
+        //räknar mänden lån som ett id har i Loans. Detta kommer användas sedan för att kontrollera så att personer inte lånar mer än de får beroende på titelid.
 
         int amount = 0;
 
