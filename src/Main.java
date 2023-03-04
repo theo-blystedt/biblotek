@@ -18,9 +18,39 @@ public class Main {
 
         /////
 
-        //Users user = new Users(3334,"Erik", "Eriksson", 3, 990725); funkar!
 
-        //m.addNewUser(user); funkar!!
+        //funkar eftersom att erik redan är i databased, funkar även att adda han
+        Users user = new Users(3334,"Erik", "Eriksson", 3, 990725);
+
+        if(m.addNewUser(user)){
+            System.out.println("User added");
+        }
+        else {
+            System.out.println("User cannot be added");
+        }
+
+        //funkar
+
+        /*Users testdeluser = new Users(9999,"jag tas", "bort",3,667788);
+        if(m.addNewUser(testdeluser)){
+            System.out.println("Delete user added");
+        }
+        else {
+            System.out.println("something went wrong");
+        }
+
+
+
+        if(m.deleteUser(9999)){
+            System.out.println("I was deleted");
+        }
+        else {
+            System.out.println("I was not deleted");
+        }
+
+         */
+
+
 
         int z = m.getLoanQuantity(3334);//funkar
         System.out.println(z);//funkar

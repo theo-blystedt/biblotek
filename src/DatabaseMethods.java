@@ -70,7 +70,15 @@ public class DatabaseMethods {
     }
 
     public boolean addNewUser(Users user) throws SQLException, ClassNotFoundException {
-        boolean ok = true;
+        boolean added = false;
+
+        List<Users> users = listOfUsers();
+
+        for(Users u: users){
+            if(u.getId() == user.getId()){
+                return added;
+            }
+        }
 
         Connection connection = getConnection();
         String query = "INSERT INTO UserDB (id,fName,lName,titleId,sNum) values (?,?,?,?,?)";
@@ -84,15 +92,14 @@ public class DatabaseMethods {
 
         //kanske kan skippa id eftersom att id är autoincrement i databasen
 
-        if (rowsInserted <= 0) {
-            ok = false;
+        if (rowsInserted > 0) {
+            added = true;
         }
 
         preparedStatement.close();
         connection.close();
 
-
-        return ok;
+        return added;
     }
 
     public List<Loan> listOfLoans() throws SQLException, ClassNotFoundException {
@@ -139,17 +146,19 @@ public class DatabaseMethods {
         }
 
         try {
-            stmt = connection.prepareStatement("SELECT FROM UserDB WHERE id = ?");
+            stmt = connection.prepareStatement("SELECT * FROM UserDB WHERE id = ?");
             stmt.setInt(1, id);
 
             resultSet = stmt.executeQuery();
 
-            if(resultSet.next()){
+            if(resultSet.next()) {
                 stmt = connection.prepareStatement("DELETE FROM UserDB WHERE id = ?");
                 stmt.setInt(1, id);
 
-                resultSet = stmt.executeQuery();
-                deleted = true;
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    deleted = true;
+                }
             }
             else{
                 System.out.println("User with id: " + id + "does not exist");
