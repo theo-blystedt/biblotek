@@ -16,6 +16,10 @@ public class Users {
     boolean isSuspended;
     int suspentionCount;
 
+    Users(){
+
+    }
+
 
 
     Users(int id, String fname, String lName, int titleId, int sNum){

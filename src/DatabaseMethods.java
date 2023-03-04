@@ -74,8 +74,8 @@ public class DatabaseMethods {
 
         List<Users> users = listOfUsers();
 
-        for(Users u: users){
-            if(u.getId() == user.getId()){
+        for (Users u : users) {
+            if (u.getId() == user.getId()) {
                 return added;
             }
         }
@@ -151,7 +151,7 @@ public class DatabaseMethods {
 
             resultSet = stmt.executeQuery();
 
-            if(resultSet.next()) {
+            if (resultSet.next()) {
                 stmt = connection.prepareStatement("DELETE FROM UserDB WHERE id = ?");
                 stmt.setInt(1, id);
 
@@ -159,8 +159,7 @@ public class DatabaseMethods {
                 if (rowsAffected > 0) {
                     deleted = true;
                 }
-            }
-            else{
+            } else {
                 System.out.println("User with id: " + id + "does not exist");
             }
         } catch (SQLException e) {
@@ -199,13 +198,77 @@ public class DatabaseMethods {
         return deleted;
     }
 
-    public boolean loanBook(int isbn){
-        boolean loaned = false;
+    public int userLoanLimit(int id) throws SQLException, ClassNotFoundException {
+        int amount = 0;
+        List<Users> usersList = listOfUsers();
+
+        Users user = new Users();
+
+        for(Users u : usersList){
+            if(u.getId() == id){
+                user.setTitleId(u.getTitleId());
+            }
+        }
+
+        switch(user.getTitleId()) {
+            case 2:
+                amount = 3;
+                break;
+            case 3:
+                amount = 5;
+                break;
+            case 4:
+                amount = 7;
+                break;
+            case 5:
+                amount = 10;
+                break;
+            default:
+                System.out.println("User does not exist or is admin"); //denna gör inget, men tänker att det är log case senare
+                break;
+        }
+
+        return amount;
+    }
 
 
+    public boolean loanBook(int isbn, int userId) throws SQLException, ClassNotFoundException {
+        int userLimit = userLoanLimit(userId);
+        int userLoanQuantity = getLoanQuantity(userId);
+        int availableBooks = getAvailableBookAmount(isbn);
+
+        if (userLoanQuantity >= userLimit) {
+            return false;
+        } else if (availableBooks <= 0) {
+
+            return false;
+        } else {
+
+            try (Connection conn = getConnection();
+                 PreparedStatement ps1 = conn.prepareStatement("INSERT INTO Loans (isbn, userId, date) VALUES (?, ?, ?)");
+                 PreparedStatement ps2 = conn.prepareStatement("UPDATE BooksDB SET onLoan = onLoan + 1, available = available - 1 WHERE isbn = ?")) {
+                ps1.setInt(1, isbn);
+                ps1.setInt(2, userId);
+                ps1.setDate(3, new java.sql.Date(System.currentTimeMillis())); // use current date
+                ps1.executeUpdate();
+                ps2.setInt(1, isbn);
+                ps2.executeUpdate();
+                return true;
+            }
+        }
+    }
+
+    public int getAvailableBookAmount(int isbn) throws SQLException, ClassNotFoundException {
+        int amount = 0;
+        List<Books> booksList = listOfBooks();
 
 
-        return loaned;
+        for(Books b: booksList){
+            if(b.getIsbn() == isbn){
+                amount = b.getAvailable();
+            }
+        }
+        return amount;
     }
 
     public int getLoanQuantity(int id) throws ClassNotFoundException {
@@ -220,15 +283,15 @@ public class DatabaseMethods {
             String query = "SELECT COUNT(*) FROM Loans WHERE userId = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
-            preparedStatement.setInt(1,id);
+            preparedStatement.setInt(1, id);
 
             ResultSet rs = preparedStatement.executeQuery();
-            if(rs.next()){
+            if (rs.next()) {
                 amount = rs.getInt(1);
             }
             rs.close();
             preparedStatement.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
