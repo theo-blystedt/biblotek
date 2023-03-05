@@ -4,7 +4,7 @@ import java.util.List;
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
-public class DatabaseMethods {
+public class DatabaseMethods{
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -78,22 +78,21 @@ public class DatabaseMethods {
         List<Users> users = listOfUsers();
 
         for (Users u : users) {
-            if (u.getId() == user.getId()) {
+            if (u.getsNum() == user.getsNum()) {
                 return false;
             }
         }
 
         Connection connection = getConnection();
-        String query = "INSERT INTO UserDB (id,fName,lName,titleId,sNum) values (?,?,?,?,?)";
+        String query = "INSERT INTO UserDB (fName,lName,titleId,sNum) values (?,?,?,?)";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, user.getId());
-        preparedStatement.setString(2, user.getfName());
-        preparedStatement.setString(3, user.getlName());
-        preparedStatement.setInt(4, user.getTitleId());
-        preparedStatement.setInt(5, user.getsNum());
+        preparedStatement.setString(1, user.getfName());
+        preparedStatement.setString(2, user.getlName());
+        preparedStatement.setInt(3, user.getTitleId());
+        preparedStatement.setInt(4, user.getsNum());
         int rowsInserted = preparedStatement.executeUpdate();
 
-        //kanske kan skippa id eftersom att id är autoincrement i databasen
+
 
         if (rowsInserted <= 0) {
             return false;
@@ -132,7 +131,7 @@ public class DatabaseMethods {
         return listOfLoans;
     }
 
-    public boolean deleteUser(int id) throws SQLException, ClassNotFoundException {
+    public boolean deleteUser(int id) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
         boolean deleted = false;
 
         Connection connection = getConnection();
@@ -163,7 +162,7 @@ public class DatabaseMethods {
                     deleted = true;
                 }
             } else {
-                System.out.println("User with id: " + id + "does not exist");
+                throw new UserDoesNotExistException();
             }
         } catch (SQLException e) {
             System.out.println("Error deleting user from database: " + e.getMessage());
@@ -271,7 +270,7 @@ public class DatabaseMethods {
         }
     }
 
-    public boolean returnItem(int id, int isbn) throws ClassNotFoundException {
+    public boolean returnItem(int id, int isbn) throws ClassNotFoundException, UserDoesNotExistException {
         try (Connection connection = getConnection()) {
             PreparedStatement ps1 = connection.prepareStatement("SELECT date FROM Loans WHERE userId = ? AND isbn = ?");
             ps1.setInt(1, id);
@@ -368,7 +367,7 @@ public class DatabaseMethods {
         return amount;
     }
 
-    public boolean suspendUser(int id, Date endDate) throws SQLException, ClassNotFoundException {
+    public boolean suspendUser(int id, Date endDate) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
         try (Connection connection = getConnection()) {
             PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = true, suspentionCount = suspentionCount + 1, suspentionStart = CURRENT_DATE, " +
                     "suspentionEnd = ?");
@@ -393,6 +392,10 @@ public class DatabaseMethods {
             System.out.println("Error with DB" + ex.getMessage());
             return false;
 
+        }
+        catch (UserDoesNotExistException e){
+            System.out.println("User doesnt exist in database");
+            return false;
         }
     }
 
