@@ -4,15 +4,12 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-
-        //test av databas metod. sout funkar inte eftersom det är av objekt typ, men det är ingen ide att fixa i
-        //databas metoden eftersom den endast ska hämta datan. Sedan kan get användas för att få ut
-        //läsbardata
+        //bara massa oläsbart skit när jag testar metoder och liknande. Men här ska sedan menyn in
         DatabaseMethods m = new DatabaseMethods();
 
         List<Users> l = m.listOfUsers();
 
-       
+
 
         for(Users u : l){
             System.out.println("Name: " + u.getfName() + " " + u.getlName() + "(id: " + u.getId()
