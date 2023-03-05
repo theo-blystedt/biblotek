@@ -30,8 +30,10 @@ public class DatabaseMethods {
             String lName = resultSet.getString("lName");
             int titleId = resultSet.getInt("titleId");
             int sNum = resultSet.getInt("sNum");
+            boolean isSuspended = resultSet.getBoolean("isSuspended");
+            int warnings = resultSet.getInt("warnings");
 
-            Users user = new Users(id, fName, lName, titleId, sNum);
+            Users user = new Users(id, fName, lName, titleId, sNum, isSuspended, warnings);
             listOfUsers.add(user);
         }
 
@@ -204,31 +206,34 @@ public class DatabaseMethods {
 
         Users user = new Users();
 
-        for(Users u : usersList){
-            if(u.getId() == id){
+        for (Users u : usersList) {
+            if (u.getId() == id) {
                 user.setTitleId(u.getTitleId());
             }
         }
 
-        switch(user.getTitleId()) {
-            case 2:
-                amount = 3;
-                break;
-            case 3:
-                amount = 5;
-                break;
-            case 4:
-                amount = 7;
-                break;
-            case 5:
-                amount = 10;
-                break;
-            default:
-                System.out.println("User does not exist or is admin"); //denna gör inget, men tänker att det är log case senare
-                break;
+        switch (user.getTitleId()) {
+            case 2 -> amount = 3;
+            case 3 -> amount = 5;
+            case 4 -> amount = 7;
+            case 5 -> amount = 10;
+            default ->
+                    System.out.println("User does not exist or is admin"); //denna gör inget, men tänker att det är log case senare. Kanske kan göra exception
         }
 
         return amount;
+    }
+
+    public boolean isSuspendedStatus(int id) throws SQLException, ClassNotFoundException {
+        List<Users> usersList = listOfUsers();
+
+        for (Users u : usersList) {
+            if (u.isSuspended()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
@@ -236,10 +241,17 @@ public class DatabaseMethods {
         int userLimit = userLoanLimit(userId);
         int userLoanQuantity = getLoanQuantity(userId);
         int availableBooks = getAvailableBookAmount(isbn);
+        boolean isSuspended = isSuspendedStatus(userId);
 
         if (userLoanQuantity >= userLimit) {
+
             return false;
+
         } else if (availableBooks <= 0) {
+
+            return false;
+
+        } else if (isSuspended) {
 
             return false;
         } else {
@@ -257,14 +269,21 @@ public class DatabaseMethods {
             }
         }
     }
+    public boolean returnItem(int id, int isbn){
+
+
+
+        return true;
+    }
+
 
     public int getAvailableBookAmount(int isbn) throws SQLException, ClassNotFoundException {
         int amount = 0;
         List<Books> booksList = listOfBooks();
 
 
-        for(Books b: booksList){
-            if(b.getIsbn() == isbn){
+        for (Books b : booksList) {
+            if (b.getIsbn() == isbn) {
                 amount = b.getAvailable();
             }
         }
@@ -297,13 +316,5 @@ public class DatabaseMethods {
 
         return amount;
     }
-
-    //public Users userStatus(int id){ //kolla status på användare typ roll, varningar, lån osv.
-
-    // Users x = new Users();
-
-    // return x;
-    //}
-
 
 }

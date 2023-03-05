@@ -51,9 +51,18 @@ public class Main {
          */
 
 
-
+        /*funkar!
         int z = m.getLoanQuantity(3334);//funkar
         System.out.println(z);//funkar
+
+        if(m.loanBook(445566,4567)){
+            System.out.println("Book was loaned");
+        }
+        else{
+            System.out.println("Cant loan book");
+        }
+
+         */
 
 
     }

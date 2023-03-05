@@ -20,6 +20,16 @@ public class Users {
 
     }
 
+    Users(int id, String fName, String lName, int titleId, int sNum, boolean isSuspended, int warnings){
+        this.id = id;
+        this.fName = fName;
+        this.lName = lName;
+        this.titleId = titleId;
+        this.sNum = sNum;
+        this.isSuspended = isSuspended;
+        this.warnings = warnings;
+    }
+
 
 
     Users(int id, String fname, String lName, int titleId, int sNum){
