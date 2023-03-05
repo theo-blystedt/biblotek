@@ -2,6 +2,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
+import java.util.concurrent.TimeUnit;
 
 public class DatabaseMethods {
 
@@ -269,13 +270,63 @@ public class DatabaseMethods {
             }
         }
     }
-    public boolean returnItem(int id, int isbn){
 
+    public boolean returnItem(int id, int isbn) throws ClassNotFoundException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement ps1 = connection.prepareStatement("SELECT loanDate FROM Loans WHERE userId = ? AND isbn = ?");
+            ps1.setInt(1, id);
+            ps1.setInt(2, isbn);
+            ResultSet rs = ps1.executeQuery();
 
+            if (rs.next()) {
+                Date loanDate = rs.getDate("loanDate");
+                long diffInMilliseconds = System.currentTimeMillis() - loanDate.getTime();
+                long diffInDays = TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
 
-        return true;
+                if (diffInDays > 15) {
+                    PreparedStatement ps3 = connection.prepareStatement("UPDATE UserDB SET warnings = warnings + 1 WHERE id = ?");
+                    ps3.setInt(1, id);
+                    int rowsUpdated = ps3.executeUpdate();
+
+                    if (rowsUpdated > 0) {
+                        PreparedStatement ps4 = connection.prepareStatement("SELECT warnings FROM UserDB WHERE id = ?");
+                        ps4.setInt(1, id);
+                        ResultSet rs2 = ps4.executeQuery();
+
+                        if (rs2.next()) {
+                            int warnings = rs2.getInt("warnings");
+
+                            if (warnings == 2) {
+                                boolean success = suspendUser(id, new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)));
+
+                                if (!success) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            PreparedStatement ps2 = connection.prepareStatement("DELETE FROM Loans WHERE userId = ? AND isbn = ?");
+            ps2.setInt(1, id);
+            ps2.setInt(2, isbn);
+            int rowsDeleted = ps2.executeUpdate();
+
+            if (rowsDeleted == 0) {
+                return false;
+            }
+
+            PreparedStatement ps5 = connection.prepareStatement("UPDATE BooksDB SET onLoan = onLoan - 1, available = available + 1 WHERE isbn = ?");
+            ps5.setInt(1, isbn);
+            int rowsUpdated = ps5.executeUpdate();
+
+            return true;
+        } catch (SQLException ex) {
+            System.out.println("An error occurred with the database while returning the item: " + ex.getMessage());
+            return false;
+        }
     }
-
 
     public int getAvailableBookAmount(int isbn) throws SQLException, ClassNotFoundException {
         int amount = 0;
@@ -317,4 +368,47 @@ public class DatabaseMethods {
         return amount;
     }
 
+    public boolean suspendUser(int id, Date endDate) throws SQLException, ClassNotFoundException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = true, suspentionCount = suspentionCount + 1, suspentionStart = CURRENT_DATE, " +
+                    "suspentionEnd = ?");
+            ps.setDate(1, endDate);
+            int rowsUpdated = ps.executeUpdate();
+            if (rowsUpdated == 0) {
+                return false;
+            }
+            PreparedStatement checkPs = connection.prepareStatement("SELECT suspentionCount FROM UserDB WHERE id = ?");
+            checkPs.setInt(1, id);
+            ResultSet rs = checkPs.executeQuery();
+            if (rs.next()) {
+                int suspensionCount = rs.getInt("suspentionCount");
+                if (suspensionCount == 2) {
+
+                    deleteUser(id);
+                }
+            }
+            return true;
+
+        } catch (SQLException ex) {
+            System.out.println("Error with DB" + ex.getMessage());
+            return false;
+
+        }
+    }
+
+    public boolean removeSuspention(int id) throws ClassNotFoundException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = false, suspentionStart = NULL, suspentionEnd = NULL WHERE id = ?");
+            ps.setInt(1, id);
+            int rowsUpdated = ps.executeUpdate();
+            if (rowsUpdated == 0) {
+                return false;
+            }
+            return true;
+
+        } catch (SQLException ex) {
+            System.out.println("Error with DB" + ex.getMessage());
+            return false;
+        }
+    }
 }
