@@ -279,7 +279,7 @@ public class DatabaseMethods {
             ResultSet rs = ps1.executeQuery();
 
             if (rs.next()) {
-                Date loanDate = rs.getDate("loanDate");
+                Date loanDate = rs.getDate("date");
                 long diffInMilliseconds = System.currentTimeMillis() - loanDate.getTime();
                 long diffInDays = TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
 
