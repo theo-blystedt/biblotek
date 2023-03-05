@@ -411,4 +411,18 @@ public class DatabaseMethods {
             return false;
         }
     }
+
+    public int getTitleId(int id) throws SQLException, ClassNotFoundException {
+
+        List<Users> usersList = listOfUsers();
+
+        for(Users u : usersList){
+            if(u.getId() == id){
+                return u.getTitleId();
+            }
+        }
+
+        return 0;
+
+    }
 }
