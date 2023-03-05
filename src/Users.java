@@ -20,6 +20,7 @@ public class Users {
 
     }
 
+    //konstruktor för list of users då jag behöver till gång till varningar och skit
     Users(int id, String fName, String lName, int titleId, int sNum, boolean isSuspended, int warnings){
         this.id = id;
         this.fName = fName;
@@ -31,7 +32,7 @@ public class Users {
     }
 
 
-
+    //används inte
     Users(int id, String fname, String lName, int titleId, int sNum){
         this.id = id;
         this.fName = fname;

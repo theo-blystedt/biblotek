@@ -73,13 +73,13 @@ public class DatabaseMethods {
     }
 
     public boolean addNewUser(Users user) throws SQLException, ClassNotFoundException {
-        boolean added = false;
+
 
         List<Users> users = listOfUsers();
 
         for (Users u : users) {
             if (u.getId() == user.getId()) {
-                return added;
+                return false;
             }
         }
 
@@ -95,14 +95,14 @@ public class DatabaseMethods {
 
         //kanske kan skippa id eftersom att id är autoincrement i databasen
 
-        if (rowsInserted > 0) {
-            added = true;
+        if (rowsInserted <= 0) {
+            return false;
         }
 
         preparedStatement.close();
         connection.close();
 
-        return added;
+        return true;
     }
 
     public List<Loan> listOfLoans() throws SQLException, ClassNotFoundException {
@@ -283,7 +283,7 @@ public class DatabaseMethods {
                 long diffInMilliseconds = System.currentTimeMillis() - loanDate.getTime();
                 long diffInDays = TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
 
-                if (diffInDays > 15) {
+                if (diffInDays > 15) { //sätter standard att man endast får låna i 15 dagar men det är bara att ändra värdet annars
                     PreparedStatement ps3 = connection.prepareStatement("UPDATE UserDB SET warnings = warnings + 1 WHERE id = ?");
                     ps3.setInt(1, id);
                     int rowsUpdated = ps3.executeUpdate();
