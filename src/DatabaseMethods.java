@@ -273,7 +273,7 @@ public class DatabaseMethods {
 
     public boolean returnItem(int id, int isbn) throws ClassNotFoundException {
         try (Connection connection = getConnection()) {
-            PreparedStatement ps1 = connection.prepareStatement("SELECT loanDate FROM Loans WHERE userId = ? AND isbn = ?");
+            PreparedStatement ps1 = connection.prepareStatement("SELECT date FROM Loans WHERE userId = ? AND isbn = ?");
             ps1.setInt(1, id);
             ps1.setInt(2, isbn);
             ResultSet rs = ps1.executeQuery();
