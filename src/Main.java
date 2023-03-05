@@ -1,5 +1,4 @@
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
@@ -11,9 +10,14 @@ public class Main {
         //läsbardata
         DatabaseMethods m = new DatabaseMethods();
 
-        List l = m.listOfUsers();
+        List<Users> l = m.listOfUsers();
 
-        System.out.println(l);
+       
+
+        for(Users u : l){
+            System.out.println("Name: " + u.getfName() + " " + u.getlName() + "(id: " + u.getId()
+                    + ", titldId: " + u.getTitleId() + ", Social number: " + u.getsNum() + ")");
+        }
 
 
         /////
