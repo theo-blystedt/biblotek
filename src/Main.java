@@ -37,6 +37,7 @@ public class Main {
                         Users user = new Users();
                         System.out.println("Skrive in förnamn");
                         user.setfName(sc.nextLine());
+                        sc.next();
                         System.out.println("Skriv in efternamn");
                         user.setlName(sc.nextLine());
                         System.out.println("Skriv in titleId för anändare; 1 = admin, 2 = Undergrad, 3 = Postgrad, 4 = PHD, 5 = Lärare");
