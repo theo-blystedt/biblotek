@@ -369,7 +369,7 @@ public class DatabaseMethods{
             PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = true, suspentionCount = suspentionCount + 1, suspentionStart = CURRENT_DATE, " +
                     "suspentionEnd = ? where id = ?");
             ps.setDate(1, endDate);
-            ps.setInt(1,id);
+            ps.setInt(2,id);
             int rowsUpdated = ps.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new UserDoesNotExistException();
