@@ -99,7 +99,7 @@ public class Main {
                     case 4:
                         for(Users u : usersList){
                             System.out.println("Namn: " + u.getfName() + " " + u.getlName() + " (ID: " + u.getId() + ", TitleId: " + u.getTitleId()
-                            + " Social number: " + u.getsNum() + ")");
+                            + ", Social number: " + u.getsNum() + ")");
                         }
                         break;
                     case 5:
@@ -119,10 +119,28 @@ public class Main {
                         }
                         break;
                     case 6:
-
+                        System.out.println("Skriv in id på användare som ska returnera boken: ");
+                        int loanid = sc.nextInt();
+                        System.out.println("Skriv in isbn på boken som ska returneras");
+                        int loanisbn = sc.nextInt();
+                        try{
+                            dm.returnItem(loanisbn,loanid);
+                        } catch (UserDoesNotExistException ux2) {
+                            System.out.println("Användare eller bok finns inte i systemet");
+                        }catch (ClassNotFoundException classNotFoundException){
+                            System.out.println("Fel med klasser");
+                        }
                         break;
                     case 7:
-
+                        System.out.println("Skriv in id på användare som ska låsas upp: ");
+                        int suspendLiftId = sc.nextInt();
+                        try{
+                            dm.removeSuspention(suspendLiftId);
+                        } catch (UserDoesNotExistException userDoesNotExistException){
+                            System.out.println("Användare finns inte i systemet");
+                        } catch (ClassNotFoundException classNotFoundException){
+                            System.out.println("Fel med klasser");
+                        }
                         break;
                     case 8:
                         running = false;

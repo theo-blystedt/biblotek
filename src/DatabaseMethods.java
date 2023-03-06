@@ -296,11 +296,8 @@ public class DatabaseMethods{
                             int warnings = rs2.getInt("warnings");
 
                             if (warnings == 2) {
-                                boolean success = suspendUser(id, new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)));
+                                suspendUser(id, new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)));
 
-                                if (!success) {
-                                    return false;
-                                }
                             }
                         }
                     }
@@ -313,7 +310,7 @@ public class DatabaseMethods{
             int rowsDeleted = ps2.executeUpdate();
 
             if (rowsDeleted == 0) {
-                return false;
+                throw new UserDoesNotExistException();
             }
 
             PreparedStatement ps5 = connection.prepareStatement("UPDATE BooksDB SET onLoan = onLoan - 1, available = available + 1 WHERE isbn = ?");
@@ -399,13 +396,13 @@ public class DatabaseMethods{
         }
     }
 
-    public boolean removeSuspention(int id) throws ClassNotFoundException {
+    public boolean removeSuspention(int id) throws ClassNotFoundException, UserDoesNotExistException {
         try (Connection connection = getConnection()) {
             PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = false, suspentionStart = NULL, suspentionEnd = NULL WHERE id = ?");
             ps.setInt(1, id);
             int rowsUpdated = ps.executeUpdate();
             if (rowsUpdated == 0) {
-                return false;
+                throw new UserDoesNotExistException();
             }
             return true;
 
