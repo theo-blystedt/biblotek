@@ -1,8 +1,8 @@
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,28 +25,34 @@ public class Main {
             if (titleId == 1) {
                 // Meny för admin
                 System.out.println("Admin meny:");
-                System.out.println("1. Lägg till användare");
-                System.out.println("2. Ta bort användare");
-                System.out.println("3. Stäng av användare till bestämt datum");
-                System.out.println("4: Se lista på alla användare");
-                System.out.println("5: Låna bok");
-                System.out.println("6: Returnera bok");
-                System.out.println("7. Ta bort avstängning av användare");
+                System.out.println("1. Lägg till användare"); //funkar inte än
+                System.out.println("2. Ta bort användare"); //funkar
+                System.out.println("3. Stäng av användare till bestämt datum"); //funkar inte än. fel med datum format
+                System.out.println("4: Se lista på alla användare"); //funkar
+                System.out.println("5: Låna bok"); //funkar
+                System.out.println("6: Returnera bok");//funkar. Har inte kollat med suspend och varningar när lån är försenat
+                System.out.println("7. Ta bort avstängning av användare");//funkar
                 System.out.println("8. Avsluta");
                 System.out.print("Välj ett alternativ: ");
                 int choice = sc.nextInt();
                 switch (choice) {
                     case 1:
-                        Users user = new Users();
+                        //vill inte sätta fname och lname in i databasen. Så de är tom. Testat med
+                        //direkt konstruktor och set. Därför är det något problem med databas metoden.
                         System.out.println("Skrive in förnamn");
-                        user.setfName(sc.nextLine());
+                        String fname = sc.nextLine();
+
                         sc.next();
                         System.out.println("Skriv in efternamn");
-                        user.setlName(sc.nextLine());
+                        String lName = sc.nextLine();
+
+                        sc.next();
                         System.out.println("Skriv in titleId för anändare; 1 = admin, 2 = Undergrad, 3 = Postgrad, 4 = PHD, 5 = Lärare");
-                        user.setTitleId(sc.nextInt());
+                        int titleId1 = sc.nextInt();
+
                         System.out.println("Skriv in personnummer på personen : ex 990613");
-                        user.setsNum(sc.nextInt());
+                        int sNum = sc.nextInt();
+                        Users user = new Users(fname,lName,titleId1,sNum);
 
                         if(dm.addNewUser(user)){
                             System.out.println("Användare tillagd!");
@@ -75,15 +81,17 @@ public class Main {
                         }
                         break;
                     case 3:
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                         try{
-                            System.out.println("Skriv in id på användare som ska tas bort: ");
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                            System.out.println("Skriv in id på användare som ska få avstängning: ");
                             int suspendId = sc.nextInt();
+
                             System.out.println("Skriv in slutdatum på avstängling (DD/MM/YYYY: ");
+                            sc.next();
                             String date = sc.nextLine();
                             try {
-                                Date dateEnd = dateFormat.parse(date);
-                                dm.suspendUser(suspendId, (java.sql.Date) dateEnd); //kanske inte funkar
+                                Date dateEnd = (Date) dateFormat.parse(date);
+                                dm.suspendUser(suspendId, dateEnd); //kanske inte funkar
                                 System.out.println("Användare avstängd!");
                             } catch (ParseException e) {
                                 System.out.println("Fel datum format, dd/MM/yyyy");
@@ -109,6 +117,7 @@ public class Main {
                         int isbn = sc.nextInt();
                         try{
                             dm.loanBook(isbn,loanUId);
+                            System.out.println("Lånad!\n");
 
                         }catch (UserHasNoMoreLoansException ux){
                             System.out.println("Användare kan inte låna fler böcker");
@@ -124,7 +133,8 @@ public class Main {
                         System.out.println("Skriv in isbn på boken som ska returneras");
                         int loanisbn = sc.nextInt();
                         try{
-                            dm.returnItem(loanisbn,loanid);
+                            dm.returnItem(loanid,loanisbn);
+                            System.out.println("Returnerad!\n");
                         } catch (UserDoesNotExistException ux2) {
                             System.out.println("Användare eller bok finns inte i systemet");
                         }catch (ClassNotFoundException classNotFoundException){
@@ -136,6 +146,7 @@ public class Main {
                         int suspendLiftId = sc.nextInt();
                         try{
                             dm.removeSuspention(suspendLiftId);
+                            System.out.println("Användare upplåst!");
                         } catch (UserDoesNotExistException userDoesNotExistException){
                             System.out.println("Användare finns inte i systemet");
                         } catch (ClassNotFoundException classNotFoundException){

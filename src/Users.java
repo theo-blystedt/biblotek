@@ -7,9 +7,6 @@ public class Users {
     int titleId; //bestämmer hur många böcker man kan låna och vem som är admin. Tönker 1 för admin och sedan
     //resten för typ av student, tex phd kan låna 5 böcker osv
     int sNum; //personnummer
-    //int numOfBorrowedBooks; //behövs inte kör count på databas rader
-    Loan loan;
-    Books book;
     Date suspentionStart;
     Date suspentionEnd;
     int warnings;
@@ -33,8 +30,8 @@ public class Users {
 
 
     //används inte
-    Users(int id, String fname, String lName, int titleId, int sNum){
-        this.id = id;
+    Users(String fname, String lName, int titleId, int sNum){
+
         this.fName = fname;
         this.lName = lName;
         this.titleId = titleId;
