@@ -367,8 +367,9 @@ public class DatabaseMethods{
     public boolean suspendUser(int id, Date endDate) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
         try (Connection connection = getConnection()) {
             PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = true, suspentionCount = suspentionCount + 1, suspentionStart = CURRENT_DATE, " +
-                    "suspentionEnd = ?");
+                    "suspentionEnd = ? where id = ?");
             ps.setDate(1, endDate);
+            ps.setInt(1,id);
             int rowsUpdated = ps.executeUpdate();
             if (rowsUpdated == 0) {
                 throw new UserDoesNotExistException();

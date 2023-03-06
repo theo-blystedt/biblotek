@@ -1,8 +1,9 @@
-import java.sql.Date;
+
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,7 +26,7 @@ public class Main {
             if (titleId == 1) {
                 // Meny för admin
                 System.out.println("Admin meny:");
-                System.out.println("1. Lägg till användare"); //funkar inte än
+                System.out.println("1. Lägg till användare"); //funkar
                 System.out.println("2. Ta bort användare"); //funkar
                 System.out.println("3. Stäng av användare till bestämt datum"); //funkar inte än. fel med datum format
                 System.out.println("4: Se lista på alla användare"); //funkar
@@ -37,21 +38,22 @@ public class Main {
                 int choice = sc.nextInt();
                 switch (choice) {
                     case 1:
-                        //vill inte sätta fname och lname in i databasen. Så de är tom. Testat med
-                        //direkt konstruktor och set. Därför är det något problem med databas metoden.
+
+                        System.out.println("Skriv in titleId för anändare; 1 = admin, 2 = Undergrad, 3 = Postgrad, 4 = PHD, 5 = Lärare");
+                        int titleId1 = sc.nextInt();
+                        sc.nextLine();
+
                         System.out.println("Skrive in förnamn");
                         String fname = sc.nextLine();
 
-                        sc.next();
+
                         System.out.println("Skriv in efternamn");
                         String lName = sc.nextLine();
 
-                        sc.next();
-                        System.out.println("Skriv in titleId för anändare; 1 = admin, 2 = Undergrad, 3 = Postgrad, 4 = PHD, 5 = Lärare");
-                        int titleId1 = sc.nextInt();
 
                         System.out.println("Skriv in personnummer på personen : ex 990613");
                         int sNum = sc.nextInt();
+
                         Users user = new Users(fname,lName,titleId1,sNum);
 
                         if(dm.addNewUser(user)){
@@ -87,11 +89,12 @@ public class Main {
                             int suspendId = sc.nextInt();
 
                             System.out.println("Skriv in slutdatum på avstängling (DD/MM/YYYY: ");
-                            sc.next();
+                            sc.nextLine();
                             String date = sc.nextLine();
                             try {
-                                Date dateEnd = (Date) dateFormat.parse(date);
-                                dm.suspendUser(suspendId, dateEnd); //kanske inte funkar
+                                Date dateEnd = dateFormat.parse(date);
+                                java.sql.Date sqlDateEnd = new java.sql.Date(dateEnd.getTime());
+                                dm.suspendUser(suspendId, sqlDateEnd); //kanske inte funkar
                                 System.out.println("Användare avstängd!");
                             } catch (ParseException e) {
                                 System.out.println("Fel datum format, dd/MM/yyyy");
