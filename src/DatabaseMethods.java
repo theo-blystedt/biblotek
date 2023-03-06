@@ -237,7 +237,7 @@ public class DatabaseMethods{
     }
 
 
-    public boolean loanBook(int isbn, int userId) throws SQLException, ClassNotFoundException {
+    public boolean loanBook(int isbn, int userId) throws SQLException, ClassNotFoundException, UserHasNoMoreLoansException, NotEnoughBooksInStoreException, UserIsSuspendedException {
         int userLimit = userLoanLimit(userId);
         int userLoanQuantity = getLoanQuantity(userId);
         int availableBooks = getAvailableBookAmount(isbn);
@@ -245,15 +245,15 @@ public class DatabaseMethods{
 
         if (userLoanQuantity >= userLimit) {
 
-            return false;
+            throw new UserHasNoMoreLoansException();
 
         } else if (availableBooks <= 0) {
 
-            return false;
+            throw new NotEnoughBooksInStoreException();
 
         } else if (isSuspended) {
 
-            return false;
+            throw new UserIsSuspendedException();
         } else {
 
             try (Connection conn = getConnection();
@@ -374,7 +374,7 @@ public class DatabaseMethods{
             ps.setDate(1, endDate);
             int rowsUpdated = ps.executeUpdate();
             if (rowsUpdated == 0) {
-                return false;
+                throw new UserDoesNotExistException();
             }
             PreparedStatement checkPs = connection.prepareStatement("SELECT suspentionCount FROM UserDB WHERE id = ?");
             checkPs.setInt(1, id);

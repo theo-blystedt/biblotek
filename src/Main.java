@@ -1,5 +1,8 @@
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -72,13 +75,48 @@ public class Main {
                         }
                         break;
                     case 3:
-
-                        break;
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                        try{
+                            System.out.println("Skriv in id på användare som ska tas bort: ");
+                            int suspendId = sc.nextInt();
+                            System.out.println("Skriv in slutdatum på avstängling (DD/MM/YYYY: ");
+                            String date = sc.nextLine();
+                            try {
+                                Date dateEnd = dateFormat.parse(date);
+                                dm.suspendUser(suspendId, (java.sql.Date) dateEnd); //kanske inte funkar
+                                System.out.println("Användare avstängd!");
+                            } catch (ParseException e) {
+                                System.out.println("Fel datum format, dd/MM/yyyy");
+                            } catch (UserDoesNotExistException ez){
+                                System.out.println("Användare med id: " + suspendId + "Finns inte");
+                            } catch (SQLException se){
+                                System.out.println("Fel med databasen");
+                            }
+                            break;
+                        } catch (ClassNotFoundException e) {
+                            System.out.println("Class problem");
+                        }
                     case 4:
-
+                        for(Users u : usersList){
+                            System.out.println("Namn: " + u.getfName() + " " + u.getlName() + " (ID: " + u.getId() + ", TitleId: " + u.getTitleId()
+                            + " Social number: " + u.getsNum() + ")");
+                        }
                         break;
                     case 5:
+                        System.out.println("Skriv in id på användaren som ska låna boken: ");
+                        int loanUId = sc.nextInt();
+                        System.out.println("Skriv isbn på boken som ska lånas (000000): ");
+                        int isbn = sc.nextInt();
+                        try{
+                            dm.loanBook(isbn,loanUId);
 
+                        }catch (UserHasNoMoreLoansException ux){
+                            System.out.println("Användare kan inte låna fler böcker");
+                        } catch (NotEnoughBooksInStoreException nx){
+                            System.out.println("Ingen bok tillgänglig för att låna");
+                        }catch (UserIsSuspendedException sx){
+                            System.out.println("User is currently suspended");
+                        }
                         break;
                     case 6:
 
