@@ -380,7 +380,6 @@ public class DatabaseMethods{
             if (rs.next()) {
                 int suspensionCount = rs.getInt("suspentionCount");
                 if (suspensionCount == 2) {
-
                     deleteUser(id);
                 }
             }
@@ -425,5 +424,45 @@ public class DatabaseMethods{
 
         return 0;
 
+    }
+
+    public Books getBook(int isbn) throws UserDoesNotExistException, SQLException, ClassNotFoundException {
+        Books b = new Books();
+        List<Books> booksList = listOfBooks();
+
+        for(Books books : booksList){
+            if(books.getIsbn() == isbn){
+                b.setIsbn(books.getIsbn());
+                b.setAvailable(books.getAvailable());
+                b.setLoaned(books.getLoaned());
+                b.setTitle(books.getTitle());
+            }
+            else {
+                throw new UserDoesNotExistException();
+            }
+        }
+
+        return b;
+    }
+
+    public Users getUser(int id) throws UserDoesNotExistException, SQLException, ClassNotFoundException {
+        Users users = new Users();
+        List<Users> usersList = listOfUsers();
+        for(Users u : usersList){
+            if(u.getId() == id){
+                users.setId(u.getId());
+                users.setfName(u.getfName());
+                users.setlName(u.getlName());
+                users.setsNum(u.getsNum());
+                users.setSuspended(u.isSuspended());
+                users.setWarnings(u.getWarnings());
+            }
+            else {
+                throw new UserDoesNotExistException();
+            }
+        }
+
+
+        return users;
     }
 }
