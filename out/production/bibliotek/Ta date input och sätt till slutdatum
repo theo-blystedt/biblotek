@@ -1,0 +1,15 @@
+public class DateExample {
+   public static void main(String[] args) {
+      Scanner scanner = new Scanner(System.in);
+      System.out.print("Enter a date (in format dd/MM/yyyy): ");
+      String input = scanner.nextLine();
+
+      SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+      try {
+         Date date = dateFormat.parse(input);
+         System.out.println("Input date: " + date);
+      } catch (Exception e) {
+         System.out.println("Invalid date format.");
+      }
+   }
+}
