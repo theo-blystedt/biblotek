@@ -28,7 +28,7 @@ public class Main {
                 System.out.println("Admin meny:");
                 System.out.println("1. Lägg till användare"); //funkar
                 System.out.println("2. Ta bort användare"); //funkar
-                System.out.println("3. Stäng av användare till bestämt datum"); //funkar inte än. fel med databasmetod
+                System.out.println("3. Stäng av användare till bestämt datum"); //funkar. Både med vanlig suspention och att användaren tas bort vid 2 avstängningar
                 System.out.println("4: Se lista på alla användare"); //funkar
                 System.out.println("5: Låna bok"); //funkar
                 System.out.println("6: Returnera bok");//funkar. Har inte kollat med suspend och varningar när lån är försenat
