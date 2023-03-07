@@ -10,7 +10,6 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
-
         DatabaseMethods dm = new DatabaseMethods();
         List<Users> usersList = dm.listOfUsers();
         Scanner sc = new Scanner(System.in);

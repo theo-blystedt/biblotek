@@ -143,7 +143,7 @@ public class DatabaseMethods{
         for (Loan e : listOfLoans) {
             int uid = e.getUserId();
             if (uid == id) {
-                return deleted;
+                return deleted; //lägg till exception
             }
         }
 
