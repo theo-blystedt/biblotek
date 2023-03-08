@@ -72,14 +72,14 @@ public class Database {
 
     }
 
-    public boolean addNewUser(Users user) throws SQLException, ClassNotFoundException {
+    public boolean addNewUser(Users user) throws SQLException, ClassNotFoundException, UserAlreadyExistExeption {
 
 
         List<Users> users = listOfUsers();
 
         for (Users u : users) {
             if (u.getsNum() == user.getsNum()) {
-                return false;
+                throw new UserAlreadyExistExeption();
             }
         }
 

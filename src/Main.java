@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, UserHasActiveLoansException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, UserHasActiveLoansException, UserAlreadyExistExeption {
 
         Database dm = new Database();
+        LibrarieService ls = new LibrarieService(dm);
         List<Users> usersList = dm.listOfUsers();
         Scanner sc = new Scanner(System.in);
         boolean running = true;
@@ -53,16 +54,14 @@ public class Main {
                         System.out.println("Skriv in personnummer på personen : ex 990613");
                         int sNum = sc.nextInt();
 
-                        Users user = new Users(fname,lName,titleId1,sNum);
-
-                        if(dm.addNewUser(user)){
+                        try {
+                            ls.addUser(fname, lName, titleId1, sNum);
                             System.out.println("Användare tillagd!");
-                            break;
+                        }catch (UserAlreadyExistExeption uax){
+                            System.out.println("Användare finns redan i systemet");
                         }
-                        else {
-                            System.out.println("Personen med person nummer " + user.getsNum() + " finns redan");
-                            break;
-                        }
+                        break;
+
                     case 2:
                         try {
                             System.out.println("Skriv in id på personen som ska tas bort: ");
