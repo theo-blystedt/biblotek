@@ -4,7 +4,7 @@ import java.util.List;
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
-public class DatabaseMethods{
+public class Database {
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -131,7 +131,7 @@ public class DatabaseMethods{
         return listOfLoans;
     }
 
-    public boolean deleteUser(int id) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
+    public boolean deleteUser(int id) throws SQLException, ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
         boolean deleted = false;
 
         Connection connection = getConnection();
@@ -143,7 +143,7 @@ public class DatabaseMethods{
         for (Loan e : listOfLoans) {
             int uid = e.getUserId();
             if (uid == id) {
-                return deleted; //lägg till exception
+                throw new UserHasActiveLoansException();
             }
         }
 
@@ -270,7 +270,7 @@ public class DatabaseMethods{
         }
     }
 
-    public boolean returnItem(int id, int isbn) throws ClassNotFoundException, UserDoesNotExistException {
+    public boolean returnItem(int id, int isbn) throws ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
         try (Connection connection = getConnection()) {
             PreparedStatement ps1 = connection.prepareStatement("SELECT date FROM Loans WHERE userId = ? AND isbn = ?");
             ps1.setInt(1, id);
@@ -364,7 +364,7 @@ public class DatabaseMethods{
         return amount;
     }
 
-    public boolean suspendUser(int id, Date endDate) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
+    public boolean suspendUser(int id, Date endDate) throws SQLException, ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
         try (Connection connection = getConnection()) {
             PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = true, suspentionCount = suspentionCount + 1, suspentionStart = CURRENT_DATE, " +
                     "suspentionEnd = ? where id = ?");

@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, UserHasActiveLoansException {
 
-        DatabaseMethods dm = new DatabaseMethods();
+        Database dm = new Database();
         List<Users> usersList = dm.listOfUsers();
         Scanner sc = new Scanner(System.in);
         boolean running = true;
@@ -31,7 +31,7 @@ public class Main {
                 System.out.println("4: Se lista på alla användare"); //funkar
                 System.out.println("5: Låna bok"); //funkar
                 System.out.println("6: Returnera bok");//funkar. Har inte kollat med suspend och varningar när lån är försenat
-                System.out.println("7. Ta bort avstängning av användare");//funkar
+                System.out.println("7. Ta bort avstängning från användare");//funkar
                 System.out.println("8. Avsluta");
                 System.out.print("Välj ett alternativ: ");
                 int choice = sc.nextInt();
@@ -79,6 +79,8 @@ public class Main {
                             System.out.println("Error deleting user from database: " + e.getMessage());
                         } catch (ClassNotFoundException e) {
                             System.out.println("Class not found: " + e.getMessage());
+                        }catch (UserHasActiveLoansException uuu){
+                            System.out.println("Kan inte ta bort användare med aktiva lån. Returnera alla böcker först");
                         }
                         break;
                     case 3:

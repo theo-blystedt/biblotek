@@ -4,9 +4,9 @@ import java.sql.SQLException;
 
 public class LibrarieService {
 
-    DatabaseMethods dm;
+    Database dm;
 
-    public LibrarieService(DatabaseMethods dm){
+    public LibrarieService(Database dm){
         this.dm = dm;
     }
 
