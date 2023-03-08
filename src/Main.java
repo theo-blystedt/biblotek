@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException, UserHasActiveLoansException, UserAlreadyExistExeption {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, UserHasActiveLoansException, UserAlreadyExistExeption, UserDoesNotExistException, LoanDoesNotExistException {
 
         Database dm = new Database();
         LibrarieService ls = new LibrarieService(dm);
@@ -66,12 +66,8 @@ public class Main {
                         try {
                             System.out.println("Skriv in id på personen som ska tas bort: ");
                             int tabortId = sc.nextInt();
-                            boolean deleted = dm.deleteUser(tabortId);
-                            if (deleted) {
-                                System.out.println("Användare bortagen");
-                            } else {
-                                System.out.println("Kunde inte ta bort användaren");
-                            }
+                            ls.deleteUser(tabortId);
+
                         } catch (UserDoesNotExistException e) {
                             System.out.println("Användaren finns inte i databasen");
                         } catch (SQLException e) {
@@ -94,7 +90,7 @@ public class Main {
                             try {
                                 Date dateEnd = dateFormat.parse(date);
                                 java.sql.Date sqlDateEnd = new java.sql.Date(dateEnd.getTime());
-                                dm.suspendUser(suspendId, sqlDateEnd); //kanske inte funkar
+                                ls.suspendUser(suspendId, sqlDateEnd);
                                 System.out.println("Användare avstängd!");
                             } catch (ParseException e) {
                                 System.out.println("Fel datum format, dd/MM/yyyy");
@@ -119,7 +115,7 @@ public class Main {
                         System.out.println("Skriv isbn på boken som ska lånas (000000): ");
                         int isbn = sc.nextInt();
                         try{
-                            dm.loanBook(isbn,loanUId);
+                            ls.loan(isbn,loanUId);
                             System.out.println("Lånad!\n");
 
                         }catch (UserHasNoMoreLoansException ux){
@@ -136,7 +132,7 @@ public class Main {
                         System.out.println("Skriv in isbn på boken som ska returneras");
                         int loanisbn = sc.nextInt();
                         try{
-                            dm.returnItem(loanid,loanisbn);
+                            ls.returnItem(loanid,loanisbn);
                             System.out.println("Returnerad!\n");
                         } catch (UserDoesNotExistException ux2) {
                             System.out.println("Användare eller bok finns inte i systemet");
@@ -148,7 +144,7 @@ public class Main {
                         System.out.println("Skriv in id på användare som ska låsas upp: ");
                         int suspendLiftId = sc.nextInt();
                         try{
-                            dm.removeSuspention(suspendLiftId);
+                            ls.removeSuspention(suspendLiftId);
                             System.out.println("Användare upplåst!");
                         } catch (UserDoesNotExistException userDoesNotExistException){
                             System.out.println("Användare finns inte i systemet");
