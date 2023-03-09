@@ -67,6 +67,7 @@ public class Main {
                             System.out.println("Skriv in id på personen som ska tas bort: ");
                             int tabortId = sc.nextInt();
                             ls.deleteUser(tabortId);
+                            System.out.println("Användare raderad!");
 
                         } catch (UserDoesNotExistException e) {
                             System.out.println("Användaren finns inte i databasen");
@@ -116,7 +117,7 @@ public class Main {
                         int isbn = sc.nextInt();
                         try{
                             ls.loan(isbn,loanUId);
-                            System.out.println("Lånad!\n");
+                            System.out.println("Lånad!");
 
                         }catch (UserHasNoMoreLoansException ux){
                             System.out.println("Användare kan inte låna fler böcker");
@@ -124,6 +125,8 @@ public class Main {
                             System.out.println("Ingen bok tillgänglig för att låna");
                         }catch (UserIsSuspendedException sx){
                             System.out.println("User is currently suspended");
+                        }catch (LoanDoesNotExistException eeee){
+                            System.out.println("");
                         }
                         break;
                     case 6:

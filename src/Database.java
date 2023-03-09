@@ -84,7 +84,7 @@ public class Database {
         }
 
         Connection connection = getConnection();
-        String query = "INSERT INTO UserDB (fName,lName,titleId,sNum) values (?,?,?,?)";
+        String query = "INSERT INTO UserDB (fName,lName,titleId,sNum,warnings,isSuspended,suspentionCount) values (?,?,?,?,0,0,0)";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, user.getfName());
         preparedStatement.setString(2, user.getlName());
