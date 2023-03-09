@@ -273,6 +273,7 @@ public class Database {
         int id = user.getId();
 
 
+
         try (Connection connection = getConnection()) {
             PreparedStatement ps1 = connection.prepareStatement("SELECT date FROM Loans WHERE userId = ? AND isbn = ?");
             ps1.setInt(1, id);
@@ -318,9 +319,10 @@ public class Database {
                 throw new UserDoesNotExistException();
             }
 
-            PreparedStatement ps5 = connection.prepareStatement("UPDATE BooksDB SET onLoan = onLoan - 1, available = available + 1 WHERE isbn = ?");
-            ps5.setInt(1, isbn);
-            int rowsUpdated = ps5.executeUpdate();
+                PreparedStatement ps5 = connection.prepareStatement("UPDATE BooksDB SET onLoan = onLoan - 1, available = available + 1 WHERE isbn = ?");
+                ps5.setInt(1, isbn);
+                int rowsUpdated = ps5.executeUpdate();
+
 
             return true;
         } catch (SQLException ex) {
@@ -393,7 +395,6 @@ public class Database {
                 }
             }
 
-            updateBookAmount(id);
             return true;
 
         } catch (SQLException ex) {
@@ -500,7 +501,7 @@ public class Database {
 
     public void updateBookAmount(int id) throws SQLException, ClassNotFoundException {
         Connection connection = getConnection();
-        PreparedStatement loanPs = connection.prepareStatement("SELECT isbn FROM LoansDB WHERE userId = ?");
+        PreparedStatement loanPs = connection.prepareStatement("SELECT isbn FROM Loans WHERE userId = ?");
         loanPs.setInt(1, id);
         ResultSet loanRs = loanPs.executeQuery();
         while (loanRs.next()) {
