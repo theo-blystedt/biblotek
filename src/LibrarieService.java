@@ -43,7 +43,7 @@ public class LibrarieService {
 
 
 	public Users deleteUser(int id) throws SQLException, UserHasActiveLoansException, UserDoesNotExistException, ClassNotFoundException {
-		Users ex = new Users();
+		Users ex = dm.getUser(id);
 		ex.setId(id);
 
 		dm.deleteUser(ex);
@@ -52,7 +52,7 @@ public class LibrarieService {
 	}
 
 	public Users suspendUser(int id, Date endDate) throws SQLException, UserDoesNotExistException, ClassNotFoundException, UserHasActiveLoansException {
-		Users ex = new Users();
+		Users ex = dm.getUser(id);
 		ex.setId(id);
 
 		dm.suspendUser(ex,endDate);
@@ -63,7 +63,7 @@ public class LibrarieService {
 	}
 
 	public Loan returnItem(int id, int isbn) throws SQLException, LoanDoesNotExistException, ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
-		Users user = new Users();
+		Users user = dm.getUser(id);
 		user.setId(id);
 		Loan loan = dm.getLoan(id,isbn);
 		dm.returnItem(user,isbn);
@@ -72,7 +72,7 @@ public class LibrarieService {
 	}
 
 	public Users removeSuspention(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException {
-		Users user = new Users();
+		Users user = dm.getUser(id);
 		user.setId(id);
 
 		dm.removeSuspention(user);
@@ -90,5 +90,12 @@ public class LibrarieService {
 		Loan loan = dm.getLoan(memberId,isbn);
 
 		return loan;
+	}
+
+	public void ListOfUsers() throws SQLException, ClassNotFoundException {
+		for(Users u : dm.listOfUsers()){
+			System.out.println("Namn: " + u.getfName() + " " + u.getlName() + " (ID: " + u.getId() + ", TitleId: " + u.getTitleId()
+					+ ", Social number: " + u.getsNum() + ")");
+		}
 	}
 }

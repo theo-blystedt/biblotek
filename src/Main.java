@@ -105,10 +105,7 @@ public class Main {
                             System.out.println("Class problem");
                         }
                     case 4:
-                        for(Users u : usersList){
-                            System.out.println("Namn: " + u.getfName() + " " + u.getlName() + " (ID: " + u.getId() + ", TitleId: " + u.getTitleId()
-                            + ", Social number: " + u.getsNum() + ")");
-                        }
+                        ls.ListOfUsers();
                         break;
                     case 5:
                         System.out.println("Skriv in id på användaren som ska låna boken: ");
