@@ -148,6 +148,8 @@ public class Database {
                 throw new UserDoesNotExistException();
             }
 
+            updateBookAmount(id);
+
             stmt = connection.prepareStatement("DELETE FROM Loans WHERE userId = ?");
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -159,7 +161,7 @@ public class Database {
 
             if (rowsAffected > 0) {
                 deleted = true;
-                updateBookAmount(id);
+
 
                 }
 
