@@ -42,7 +42,7 @@ public class LibrarieService {
 	}
 
 
-	public Users deleteUser(int id) throws SQLException, UserHasActiveLoansException, UserDoesNotExistException, ClassNotFoundException {
+	public Users deleteUser(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException {
 		Users ex = dm.getUser(id);
 		ex.setId(id);
 

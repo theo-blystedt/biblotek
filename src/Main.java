@@ -75,8 +75,6 @@ public class Main {
                             System.out.println("Error deleting user from database: " + e.getMessage());
                         } catch (ClassNotFoundException e) {
                             System.out.println("Class not found: " + e.getMessage());
-                        }catch (UserHasActiveLoansException uuu){
-                            System.out.println("Kan inte ta bort användare med aktiva lån. Returnera alla böcker först");
                         }
                         break;
                     case 3:
