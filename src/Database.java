@@ -72,16 +72,8 @@ public class Database {
 
     }
 
-    public boolean addNewUser(Users user) throws SQLException, ClassNotFoundException, UserAlreadyExistExeption {
+    public boolean addNewUser(Users user) throws SQLException, ClassNotFoundException{
 
-
-        List<Users> users = listOfUsers();
-
-        for (Users u : users) {
-            if (u.getsNum() == user.getsNum()) {
-                throw new UserAlreadyExistExeption();
-            }
-        }
 
         Connection connection = getConnection();
         String query = "INSERT INTO UserDB (fName,lName,titleId,sNum,warnings,isSuspended,suspentionCount) values (?,?,?,?,0,0,0)";
@@ -481,10 +473,11 @@ public class Database {
     }
 
     public Users getUser(int id) throws UserDoesNotExistException, SQLException, ClassNotFoundException {
-        Users users = new Users();
+        Users users = null;
         List<Users> usersList = listOfUsers();
         for (Users u : usersList) {
             if (u.getId() == id) {
+                users = new Users();
                 users.setId(u.getId());
                 users.setfName(u.getfName());
                 users.setlName(u.getlName());
@@ -495,6 +488,25 @@ public class Database {
         }
         if (users == null) {
             throw new UserDoesNotExistException();
+        }
+
+
+        return users;
+    }
+    public Users getUsersNum(int sNum) throws UserDoesNotExistException, SQLException, ClassNotFoundException {
+        Users users = null;
+        List<Users> usersList = listOfUsers();
+        for (Users u : usersList) {
+            if (u.getsNum() == sNum) {
+                users = new Users();
+                users.setId(u.getId());
+                users.setfName(u.getfName());
+                users.setlName(u.getlName());
+                users.setsNum(u.getsNum());
+                users.setSuspended(u.isSuspended());
+                users.setWarnings(u.getWarnings());
+                break;
+            }
         }
 
 

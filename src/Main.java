@@ -12,7 +12,6 @@ public class Main {
 
         Database dm = new Database();
         LibrarieService ls = new LibrarieService(dm);
-        List<Users> usersList = dm.listOfUsers();
         Scanner sc = new Scanner(System.in);
         boolean running = true;
 

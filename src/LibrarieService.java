@@ -13,8 +13,16 @@ public class LibrarieService {
 
 
 
-	public Users addUser(String fName, String lName, int titleId, int sNum) throws SQLException, ClassNotFoundException, UserAlreadyExistExeption {
+	public Users addUser(String fName, String lName, int titleId, int sNum) throws SQLException, ClassNotFoundException, UserAlreadyExistExeption, UserDoesNotExistException {
 		Users newUser = new Users(fName,lName,titleId,sNum);
+
+		List<Users> users = dm.listOfUsers();
+
+		Users user = dm.getUsersNum(sNum);
+
+			if (user != null) {
+				throw new UserAlreadyExistExeption();
+			}
 
 		dm.addNewUser(newUser);
 
@@ -33,18 +41,21 @@ public class LibrarieService {
 				}
 			}
 
-		}
-		catch(NullPointerException ex){
-			System.out.println("Tomt");
+		} catch (SQLException sqlException){
+			System.out.println("fel i databas");
 		}
 
 		return test;
 	}
 
 
-	public Users deleteUser(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException {
+	public Users deleteUser(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException, UserAlreadyExistExeption {
 		Users ex = dm.getUser(id);
-		ex.setId(id);
+
+
+		if(ex == null) {
+			throw new UserDoesNotExistException();
+		}
 
 		dm.deleteUser(ex);
 
@@ -53,7 +64,6 @@ public class LibrarieService {
 
 	public Users suspendUser(int id, Date endDate) throws SQLException, UserDoesNotExistException, ClassNotFoundException, UserHasActiveLoansException {
 		Users ex = dm.getUser(id);
-		ex.setId(id);
 
 		dm.suspendUser(ex,endDate);
 
@@ -64,7 +74,7 @@ public class LibrarieService {
 
 	public Loan returnItem(int id, int isbn) throws SQLException, LoanDoesNotExistException, ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
 		Users user = dm.getUser(id);
-		user.setId(id);
+
 		Loan loan = dm.getLoan(id,isbn);
 		dm.returnItem(user,isbn);
 
@@ -73,7 +83,6 @@ public class LibrarieService {
 
 	public Users removeSuspention(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException {
 		Users user = dm.getUser(id);
-		user.setId(id);
 
 		dm.removeSuspention(user);
 
@@ -91,6 +100,8 @@ public class LibrarieService {
 
 		return loan;
 	}
+
+
 
 	public void ListOfUsers() throws SQLException, ClassNotFoundException {
 		for(Users u : dm.listOfUsers()){
