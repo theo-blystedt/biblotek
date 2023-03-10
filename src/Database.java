@@ -153,8 +153,6 @@ public class Database {
 
             if (rowsAffected > 0) {
                 deleted = true;
-
-
                 }
 
         } catch (SQLException e) {
@@ -230,42 +228,22 @@ public class Database {
 
 
     public boolean loanBook(int isbn, int userId) throws SQLException, ClassNotFoundException, UserHasNoMoreLoansException, NotEnoughBooksInStoreException, UserIsSuspendedException {
-        int userLimit = userLoanLimit(userId);
-        int userLoanQuantity = getLoanQuantity(userId);
-        int availableBooks = getAvailableBookAmount(isbn);
-        boolean isSuspended = isSuspendedStatus(userId);
-
-        if (userLoanQuantity >= userLimit) {
-
-            throw new UserHasNoMoreLoansException();
-
-        } else if (availableBooks <= 0) {
-
-            throw new NotEnoughBooksInStoreException();
-
-        } else if (isSuspended) {
-
-            throw new UserIsSuspendedException();
-        } else {
-
-            try (Connection conn = getConnection();
-                 PreparedStatement ps1 = conn.prepareStatement("INSERT INTO Loans (isbn, userId, date) VALUES (?, ?, ?)");
-                 PreparedStatement ps2 = conn.prepareStatement("UPDATE BooksDB SET onLoan = onLoan + 1, available = available - 1 WHERE isbn = ?")) {
-                ps1.setInt(1, isbn);
-                ps1.setInt(2, userId);
-                ps1.setDate(3, new java.sql.Date(System.currentTimeMillis())); // use current date
-                ps1.executeUpdate();
-                ps2.setInt(1, isbn);
-                ps2.executeUpdate();
-                return true;
-            }
+        try (Connection conn = getConnection();
+             PreparedStatement ps1 = conn.prepareStatement("INSERT INTO Loans (isbn, userId, date) VALUES (?, ?, ?)");
+             PreparedStatement ps2 = conn.prepareStatement("UPDATE BooksDB SET onLoan = onLoan + 1, available = available - 1 WHERE isbn = ?")) {
+            ps1.setInt(1, isbn);
+            ps1.setInt(2, userId);
+            ps1.setDate(3, new java.sql.Date(System.currentTimeMillis())); // use current date
+            ps1.executeUpdate();
+            ps2.setInt(1, isbn);
+            ps2.executeUpdate();
+            return true;
         }
     }
 
-    public boolean returnItem(Users user, int isbn) throws ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
+    public boolean returnItem(Users user, int isbn) throws ClassNotFoundException {
 
         int id = user.getId();
-
 
 
         try (Connection connection = getConnection()) {
@@ -310,7 +288,7 @@ public class Database {
             int rowsDeleted = ps2.executeUpdate();
 
             if (rowsDeleted == 0) {
-                throw new UserDoesNotExistException();
+                return false;
             }
 
                 PreparedStatement ps5 = connection.prepareStatement("UPDATE BooksDB SET onLoan = onLoan - 1, available = available + 1 WHERE isbn = ?");
@@ -365,7 +343,7 @@ public class Database {
         return amount;
     }
 
-    public boolean suspendUser(Users user, Date endDate) throws SQLException, ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
+    public boolean suspendUser(Users user, Date endDate) throws SQLException, ClassNotFoundException {
         int id = user.getId();
 
 
@@ -376,7 +354,7 @@ public class Database {
             ps.setInt(2, id);
             int rowsUpdated = ps.executeUpdate();
             if (rowsUpdated == 0) {
-                throw new UserDoesNotExistException();
+                return false;
             }
 
             PreparedStatement checkPs = connection.prepareStatement("SELECT suspentionCount FROM UserDB WHERE id = ?");
@@ -388,7 +366,6 @@ public class Database {
                     deleteUser(user);
                 }
             }
-
             return true;
 
         } catch (SQLException ex) {
@@ -401,7 +378,7 @@ public class Database {
         }
     }
 
-    public boolean removeSuspention(Users user) throws ClassNotFoundException, UserDoesNotExistException {
+    public boolean removeSuspention(Users user) throws ClassNotFoundException {
 
         int id = user.getId();
 
@@ -410,7 +387,7 @@ public class Database {
             ps.setInt(1, id);
             int rowsUpdated = ps.executeUpdate();
             if (rowsUpdated == 0) {
-                throw new UserDoesNotExistException();
+                return false;
             }
             return true;
 
@@ -472,7 +449,7 @@ public class Database {
         return loan;
     }
 
-    public Users getUser(int id) throws UserDoesNotExistException, SQLException, ClassNotFoundException {
+    public Users getUser(int id) throws SQLException, ClassNotFoundException {
         Users users = null;
         List<Users> usersList = listOfUsers();
         for (Users u : usersList) {
@@ -486,14 +463,10 @@ public class Database {
                 users.setWarnings(u.getWarnings());
             }
         }
-        if (users == null) {
-            throw new UserDoesNotExistException();
-        }
-
 
         return users;
     }
-    public Users getUsersNum(int sNum) throws UserDoesNotExistException, SQLException, ClassNotFoundException {
+    public Users getUsersNum(int sNum) throws SQLException, ClassNotFoundException {
         Users users = null;
         List<Users> usersList = listOfUsers();
         for (Users u : usersList) {

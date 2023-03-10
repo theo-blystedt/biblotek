@@ -11,6 +11,10 @@ public class LibrarieService {
         this.dm = dm;
     }
 
+	public LibrarieService(){
+
+	}
+
 
 
 	public Users addUser(String fName, String lName, int titleId, int sNum) throws SQLException, ClassNotFoundException, UserAlreadyExistExeption, UserDoesNotExistException {
@@ -49,7 +53,7 @@ public class LibrarieService {
 	}
 
 
-	public Users deleteUser(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException, UserAlreadyExistExeption {
+	public Users deleteUser(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException {
 		Users ex = dm.getUser(id);
 
 
@@ -62,18 +66,26 @@ public class LibrarieService {
 		return ex;
 	}
 
-	public Users suspendUser(int id, Date endDate) throws SQLException, UserDoesNotExistException, ClassNotFoundException, UserHasActiveLoansException {
+	public Users suspendUser(int id, Date endDate) throws SQLException, UserDoesNotExistException, ClassNotFoundException {
 		Users ex = dm.getUser(id);
 
-		dm.suspendUser(ex,endDate);
+		boolean success = dm.suspendUser(ex, endDate);
 
+		if (!success) {
+			throw new UserDoesNotExistException();
+		}
 
 		return ex;
-
 	}
 
-	public Loan returnItem(int id, int isbn) throws SQLException, LoanDoesNotExistException, ClassNotFoundException, UserDoesNotExistException, UserHasActiveLoansException {
+	public Loan returnItem(int id, int isbn) throws SQLException, LoanDoesNotExistException, ClassNotFoundException, UserDoesNotExistException {
 		Users user = dm.getUser(id);
+
+		boolean success = dm.returnItem(user,isbn);
+
+		if(!success){
+			throw new UserDoesNotExistException(); //or book
+		}
 
 		Loan loan = dm.getLoan(id,isbn);
 		dm.returnItem(user,isbn);
@@ -81,8 +93,14 @@ public class LibrarieService {
 		return loan;
 	}
 
-	public Users removeSuspention(int id) throws SQLException, UserDoesNotExistException, ClassNotFoundException {
+	public Users removeSuspention(int id) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
 		Users user = dm.getUser(id);
+
+		boolean success = dm.removeSuspention(user);
+
+		if(!success){
+			throw new UserDoesNotExistException();
+		}
 
 		dm.removeSuspention(user);
 
@@ -94,11 +112,25 @@ public class LibrarieService {
 
 	public Loan loan(int isbn, int memberId) throws UserDoesNotExistException, SQLException, ClassNotFoundException, LoanDoesNotExistException, NotEnoughBooksInStoreException, UserIsSuspendedException, UserHasNoMoreLoansException {
 
-		dm.loanBook(isbn,memberId);
+		int userLimit = dm.userLoanLimit(memberId);
+		int userLoanQuantity = dm.getLoanQuantity(memberId);
+		int availableBooks = dm.getAvailableBookAmount(isbn);
+		boolean isSuspended = dm.isSuspendedStatus(memberId);
 
-		Loan loan = dm.getLoan(memberId,isbn);
-
-		return loan;
+		if (userLoanQuantity >= userLimit) {
+			throw new UserHasNoMoreLoansException();
+		} else if (availableBooks <= 0) {
+			throw new NotEnoughBooksInStoreException();
+		} else if (isSuspended) {
+			throw new UserIsSuspendedException();
+		} else {
+			try {
+				dm.loanBook(isbn, memberId);
+				return dm.getLoan(memberId, isbn);
+			} catch (SQLException | ClassNotFoundException ex) {
+				throw ex;
+			}
+		}
 	}
 
 
