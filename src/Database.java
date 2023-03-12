@@ -241,7 +241,7 @@ public class Database {
         }
     }
 
-    public boolean returnItem(Users user, int isbn) throws ClassNotFoundException {
+    public boolean returnItem(Users user, int isbn) throws ClassNotFoundException, UserDoesNotExistException {
 
         int id = user.getId();
 
@@ -343,7 +343,7 @@ public class Database {
         return amount;
     }
 
-    public boolean suspendUser(Users user, Date endDate) throws SQLException, ClassNotFoundException {
+    public boolean suspendUser(Users user, Date endDate) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
         int id = user.getId();
 
 
@@ -366,16 +366,13 @@ public class Database {
                     deleteUser(user);
                 }
             }
-            return true;
 
         } catch (SQLException ex) {
             System.out.println("Error with DB" + ex.getMessage());
-            return false;
 
-        } catch (UserDoesNotExistException e) {
-            System.out.println("User doesnt exist in database");
-            return false;
+
         }
+        return true;
     }
 
     public boolean removeSuspention(Users user) throws ClassNotFoundException {

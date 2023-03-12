@@ -152,7 +152,7 @@ public class TestKlass {
 
 
     @Test
-    public void testReturnItemUserDoesNotExist() throws SQLException, LoanDoesNotExistException, ClassNotFoundException {
+    public void testReturnItemUserDoesNotExist() throws SQLException, LoanDoesNotExistException, ClassNotFoundException, UserDoesNotExistException {
 
         int userId = 1;
         int isbn = 12345;
