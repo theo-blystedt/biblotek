@@ -7,9 +7,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import org.apache.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 
 public class Main {
+    private static final Logger logger = (Logger) LogManager.getLogger(Database.class);
     public static void main(String[] args) throws SQLException, ClassNotFoundException, UserHasActiveLoansException, UserAlreadyExistExeption, UserDoesNotExistException, LoanDoesNotExistException {
+
 
         Database dm = new Database();
         LibrarieService ls = new LibrarieService(dm);
@@ -57,6 +61,7 @@ public class Main {
                         try {
                             ls.addUser(fname, lName, titleId1, sNum);
                             System.out.println("Användare tillagd!");
+                            logger.info("användare: " + userId + "la till en användare");
                         }catch (UserAlreadyExistExeption uax){
                             System.out.println("Användare finns redan i systemet");
                         }
@@ -68,6 +73,7 @@ public class Main {
                             int tabortId = sc.nextInt();
                             ls.deleteUser(tabortId);
                             System.out.println("Användare raderad!");
+                            logger.info("användare: " + userId + "tog bort en användare");
 
                         } catch (UserDoesNotExistException e) {
                             System.out.println("Användaren finns inte i databasen");
@@ -91,6 +97,7 @@ public class Main {
                                 java.sql.Date sqlDateEnd = new java.sql.Date(dateEnd.getTime());
                                 ls.suspendUser(suspendId, sqlDateEnd);
                                 System.out.println("Användare avstängd!");
+                                logger.info("användare: " + userId + "stängde av en användare id: " + suspendId);
                             } catch (ParseException e) {
                                 System.out.println("Fel datum format, dd/MM/yyyy");
                             } catch (UserDoesNotExistException ez){
@@ -104,6 +111,7 @@ public class Main {
                         }
                     case 4:
                         ls.ListOfUsers();
+                        logger.info("användare: " + userId + "hämtade lista av alla användare");
                         break;
                     case 5:
                         System.out.println("Skriv in id på användaren som ska låna boken: ");
@@ -113,6 +121,7 @@ public class Main {
                         try{
                             ls.loan(isbn,loanUId);
                             System.out.println("Lånad!");
+                            logger.info("användare: " + userId + "lånade en bok till" + loanUId);
 
                         }catch (UserHasNoMoreLoansException ux){
                             System.out.println("Användare kan inte låna fler böcker");
@@ -121,7 +130,7 @@ public class Main {
                         }catch (UserIsSuspendedException sx){
                             System.out.println("User is currently suspended");
                         }catch (LoanDoesNotExistException eeee){
-                            System.out.println("");
+                            System.out.println("Loan does not exist");
                         }
                         break;
                     case 6:
@@ -132,6 +141,7 @@ public class Main {
                         try{
                             ls.returnItem(loanid,loanisbn);
                             System.out.println("Returnerad!\n");
+                            logger.info("användare: " + userId + "returnerade en bok");
                         } catch (UserDoesNotExistException ux2) {
                             System.out.println("Användare eller bok finns inte i systemet. Användare kan ha automatiskt blivit borttagen pga försening");
                         }catch (ClassNotFoundException classNotFoundException){
@@ -144,6 +154,7 @@ public class Main {
                         try{
                             ls.removeSuspention(suspendLiftId);
                             System.out.println("Användare upplåst!");
+                            logger.info("användare: " + userId + "låste upp en användare");
                         } catch (UserDoesNotExistException userDoesNotExistException){
                             System.out.println("Användare finns inte i systemet");
                         } catch (ClassNotFoundException classNotFoundException){
@@ -166,5 +177,6 @@ public class Main {
         }
 
         System.out.println("Tack för besöket!");
+        logger.info("användare: " + userId + "loggade ut");
     }
 }
