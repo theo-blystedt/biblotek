@@ -122,7 +122,7 @@ public class Database {
         return listOfLoans;
     }
 
-    public boolean deleteUser(Users u) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
+    public boolean deleteUser(Users u) throws SQLException, ClassNotFoundException {
         boolean deleted = false;
 
         int id = u.getId();
@@ -132,14 +132,6 @@ public class Database {
         ResultSet resultSet = null;
 
         try {
-            stmt = connection.prepareStatement("SELECT * FROM UserDB WHERE id = ?");
-            stmt.setInt(1, id);
-            resultSet = stmt.executeQuery();
-
-            if (!resultSet.next()) {
-                throw new UserDoesNotExistException();
-            }
-
             updateBookAmount(id);
 
             stmt = connection.prepareStatement("DELETE FROM Loans WHERE userId = ?");
@@ -227,7 +219,7 @@ public class Database {
     }
 
 
-    public boolean loanBook(int isbn, int userId) throws SQLException, ClassNotFoundException, UserHasNoMoreLoansException, NotEnoughBooksInStoreException, UserIsSuspendedException {
+    public boolean loanBook(int isbn, int userId) throws SQLException, ClassNotFoundException {
         try (Connection conn = getConnection();
              PreparedStatement ps1 = conn.prepareStatement("INSERT INTO Loans (isbn, userId, date) VALUES (?, ?, ?)");
              PreparedStatement ps2 = conn.prepareStatement("UPDATE BooksDB SET onLoan = onLoan + 1, available = available - 1 WHERE isbn = ?")) {
@@ -241,11 +233,7 @@ public class Database {
         }
     }
 
-    public boolean returnItem(Users user, int isbn) throws ClassNotFoundException, UserDoesNotExistException {
-
-        int id = user.getId();
-
-
+    public Date getLoanDate(int id, int isbn) throws SQLException, ClassNotFoundException {
         try (Connection connection = getConnection()) {
             PreparedStatement ps1 = connection.prepareStatement("SELECT date FROM Loans WHERE userId = ? AND isbn = ?");
             ps1.setInt(1, id);
@@ -253,34 +241,52 @@ public class Database {
             ResultSet rs = ps1.executeQuery();
 
             if (rs.next()) {
-                Date loanDate = rs.getDate("date");
-                long diffInMilliseconds = System.currentTimeMillis() - loanDate.getTime();
-                long diffInDays = TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
-
-                if (diffInDays > 15) { //sätter standard att man endast får låna i 15 dagar men det är bara att ändra värdet annars
-                    PreparedStatement ps3 = connection.prepareStatement("UPDATE UserDB SET warnings = warnings + 1 WHERE id = ?");
-                    ps3.setInt(1, id);
-                    int rowsUpdated = ps3.executeUpdate();
-
-                    if (rowsUpdated > 0) {
-                        PreparedStatement ps4 = connection.prepareStatement("SELECT warnings FROM UserDB WHERE id = ?");
-                        ps4.setInt(1, id);
-                        ResultSet rs2 = ps4.executeQuery();
-
-                        if (rs2.next()) {
-                            int warnings = rs2.getInt("warnings");
-
-                            if (warnings == 2) {
-                                PreparedStatement ps5 = connection.prepareStatement("UPDATE UserDB SET warnings = 0 WHERE id = ?");
-                                ps5.setInt(1, id);
-                                ps5.executeUpdate();
-                                suspendUser(user, new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)));
-
-                            }
-                        }
-                    }
-                }
+                return rs.getDate("date");
             }
+        }
+        return null;
+    }
+    public boolean isLoanOverdue(Date loanDate) {
+        long diffInMilliseconds = System.currentTimeMillis() - loanDate.getTime();
+        long diffInDays = TimeUnit.DAYS.convert(diffInMilliseconds, TimeUnit.MILLISECONDS);
+
+        return diffInDays > 15;
+    }
+    public int updateUserWarnings(int id) throws SQLException, ClassNotFoundException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement ps3 = connection.prepareStatement("UPDATE UserDB SET warnings = warnings + 1 WHERE id = ?");
+            ps3.setInt(1, id);
+            return ps3.executeUpdate();
+        }
+    }
+    public int getUserWarnings(int id) throws SQLException, ClassNotFoundException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement ps4 = connection.prepareStatement("SELECT warnings FROM UserDB WHERE id = ?");
+            ps4.setInt(1, id);
+            ResultSet rs2 = ps4.executeQuery();
+
+            if (rs2.next()) {
+                return rs2.getInt("warnings");
+            }
+        }
+        return 0;
+    }
+    public void resetUserWarnings(int id) throws SQLException, ClassNotFoundException {
+        try (Connection connection = getConnection()) {
+            PreparedStatement ps5 = connection.prepareStatement("UPDATE UserDB SET warnings = 0 WHERE id = ?");
+            ps5.setInt(1, id);
+            ps5.executeUpdate();
+        }
+    }
+
+
+
+    public boolean returnItem(Users user, int isbn) throws ClassNotFoundException {
+
+        int id = user.getId();
+
+
+        try (Connection connection = getConnection()) {
 
             PreparedStatement ps2 = connection.prepareStatement("DELETE FROM Loans WHERE userId = ? AND isbn = ?");
             ps2.setInt(1, id);
@@ -342,10 +348,20 @@ public class Database {
 
         return amount;
     }
+    public int getSuspensionCount(int id) throws SQLException, ClassNotFoundException {
 
-    public boolean suspendUser(Users user, Date endDate) throws SQLException, ClassNotFoundException, UserDoesNotExistException {
+        Connection connection = getConnection();
+        PreparedStatement checkPs = connection.prepareStatement("SELECT suspentionCount FROM UserDB WHERE id = ?");
+        checkPs.setInt(1, id);
+        ResultSet rs = checkPs.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("suspentionCount");
+        }
+        return 0;
+    }
+
+    public boolean suspendUser(Users user, Date endDate) throws SQLException, ClassNotFoundException {
         int id = user.getId();
-
 
         try (Connection connection = getConnection()) {
             PreparedStatement ps = connection.prepareStatement("UPDATE UserDB SET isSuspended = true, suspentionCount = suspentionCount + 1, suspentionStart = CURRENT_DATE, " +
@@ -357,15 +373,6 @@ public class Database {
                 return false;
             }
 
-            PreparedStatement checkPs = connection.prepareStatement("SELECT suspentionCount FROM UserDB WHERE id = ?");
-            checkPs.setInt(1, id);
-            ResultSet rs = checkPs.executeQuery();
-            if (rs.next()) {
-                int suspensionCount = rs.getInt("suspentionCount");
-                if (suspensionCount == 2) {
-                    deleteUser(user);
-                }
-            }
 
         } catch (SQLException ex) {
             System.out.println("Error with DB" + ex.getMessage());
@@ -408,40 +415,37 @@ public class Database {
 
     }
 
-    public Books getBook(int isbn) throws UserDoesNotExistException, SQLException, ClassNotFoundException {
-        Books b = new Books();
+    public Books getBook(int isbn) throws SQLException, ClassNotFoundException {
+        Books b = null;
         List<Books> booksList = listOfBooks();
 
         for (Books books : booksList) {
             if (books.getIsbn() == isbn) {
+                b = new Books();
                 b.setIsbn(books.getIsbn());
                 b.setAvailable(books.getAvailable());
                 b.setLoaned(books.getLoaned());
                 b.setTitle(books.getTitle());
             }
         }
-        if (b == null) {
-            throw new UserDoesNotExistException();
-        }
+
 
         return b;
     }
 
     public Loan getLoan(int id, int isbn) throws SQLException, ClassNotFoundException, LoanDoesNotExistException {
-        Loan loan = new Loan();
+        Loan loan = null;
         List<Loan> loanList = listOfLoans();
 
         for (Loan l : loanList) {
             if (l.getIsbn() == isbn && l.getUserId() == id) {
+                loan = new Loan();
                 loan.setDate(l.getDate());
                 loan.setLoanId(l.getLoanId());
                 loan.setIsbn(l.getIsbn());
                 loan.setUserId(l.getUserId());
 
             }
-        }
-        if (loan == null) {
-            throw new LoanDoesNotExistException();
         }
         return loan;
     }

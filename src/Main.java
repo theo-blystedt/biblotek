@@ -147,6 +147,8 @@ public class Main {
                             System.out.println("Användare finns inte i systemet");
                         } catch (ClassNotFoundException classNotFoundException){
                             System.out.println("Fel med klasser");
+                        } catch (NullPointerException ex){
+                            System.out.println("Användare finns inte");
                         }
                         break;
                     case 8:
