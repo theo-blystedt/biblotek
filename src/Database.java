@@ -1,10 +1,16 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
+
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
+
 public class Database {
+
+    private static final Logger logger = (Logger) LogManager.getLogger(Database.class);
 
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
@@ -148,16 +154,16 @@ public class Database {
                 }
 
         } catch (SQLException e) {
-            System.out.println("Error deleting user from database: " + e.getMessage());
-            throw e;
+            System.out.println("Fel i databas" + e.getMessage());
+            logger.error("Fel i databas vid deleteuser");
         } finally {
             try {
                 if (stmt != null) {
                     stmt.close();
                 }
             } catch (SQLException e) {
-                System.out.println("Error closing statement: " + e.getMessage());
-                throw e;
+                System.out.println("Fel med statement: " + e.getMessage());
+                logger.error("Fel i databas med statement vid deleteuser");
             }
 
             try {
@@ -165,17 +171,18 @@ public class Database {
                     resultSet.close();
                 }
             } catch (SQLException e) {
-                System.out.println("Error closing result set: " + e.getMessage());
-                throw e;
-            }
+                System.out.println("Fel i RS: " + e.getMessage());
+                logger.error("Fel i databas med RS vid deleteuser");
 
+
+            }
             try {
                 if (connection != null) {
                     connection.close();
                 }
             } catch (SQLException e) {
-                System.out.println("Error closing connection: " + e.getMessage());
-                throw e;
+                System.out.println("Fel i connection" + e.getMessage());
+                logger.error("Fel med connection vid deleteuser");
             }
         }
 
@@ -243,6 +250,10 @@ public class Database {
             if (rs.next()) {
                 return rs.getDate("date");
             }
+        } catch (SQLException exz){
+            logger.error("Fel i databas vid getLoanDate");
+        }catch (ClassNotFoundException classNotFoundException){
+            logger.error("Fel i databas med classer vid getLoanDate");
         }
         return null;
     }
@@ -302,11 +313,13 @@ public class Database {
                 int rowsUpdated = ps5.executeUpdate();
 
 
-            return true;
+
         } catch (SQLException ex) {
-            System.out.println("An error occurred with the database while returning the item: " + ex.getMessage());
-            return false;
+            System.out.println("Fel i databas hämtning: " + ex.getMessage());
+            logger.error("Fel med databas i returnitem");
+
         }
+        return true;
     }
 
     public int getAvailableBookAmount(int isbn) throws SQLException, ClassNotFoundException {
@@ -343,7 +356,8 @@ public class Database {
             rs.close();
             preparedStatement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.println("Fel i databas vid getLoanQuant");
+            logger.error("Fel i databas vid getloanquant");
         }
 
         return amount;
@@ -375,7 +389,8 @@ public class Database {
 
 
         } catch (SQLException ex) {
-            System.out.println("Error with DB" + ex.getMessage());
+            System.out.println("fel i databas" + ex.getMessage());
+            logger.error("Fel i databas vid suspenduser");
 
 
         }
@@ -393,12 +408,14 @@ public class Database {
             if (rowsUpdated == 0) {
                 return false;
             }
-            return true;
+
 
         } catch (SQLException ex) {
-            System.out.println("Error with DB" + ex.getMessage());
-            return false;
+            System.out.println("Fel i databas vid removesuspention" + ex.getMessage());
+            logger.error("fel i databas vid removesuspention");
+
         }
+        return true;
     }
 
     public int getTitleId(int id) throws SQLException, ClassNotFoundException {
