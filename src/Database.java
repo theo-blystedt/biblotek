@@ -451,21 +451,15 @@ public class Database {
     }
 
     public Users getUser(int id) throws SQLException, ClassNotFoundException {
-        Users users = null;
         List<Users> usersList = listOfUsers();
         for (Users u : usersList) {
             if (u.getId() == id) {
-                users = new Users();
-                users.setId(u.getId());
-                users.setfName(u.getfName());
-                users.setlName(u.getlName());
-                users.setsNum(u.getsNum());
-                users.setSuspended(u.isSuspended());
-                users.setWarnings(u.getWarnings());
+                return new Users(u.getId(), u.getfName(), u.getlName(), u.getTitleId(), u.getsNum(), u.isSuspended(), u.getWarnings());
             }
         }
 
-        return users;
+
+        return null;
     }
     public Users getUsersNum(int sNum) throws SQLException, ClassNotFoundException {
         Users users = null;

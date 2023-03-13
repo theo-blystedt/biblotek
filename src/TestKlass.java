@@ -99,28 +99,40 @@ public class TestKlass {
     }
 
     @Test
-    public void suspendUserTest1() throws SQLException, ClassNotFoundException, UserDoesNotExistException {
+    public void testSuspendUser1() throws SQLException, UserDoesNotExistException, ClassNotFoundException {
+        int userId = 123;
+        Date endDate = new Date(System.currentTimeMillis());
+        Users user = new Users("Hej", "Hej", 3, 555555);
+        user.setId(userId);
+        when(dm.getUser(userId)).thenReturn(user);
+        when(dm.getSuspensionCount(userId)).thenReturn(0);
+        when(dm.suspendUser(user, endDate)).thenReturn(true);
 
-        Users testUser = new Users();
-        testUser.setId(1);
-        testUser.setfName("hej");
+        Users result = librarieService.suspendUser(userId, endDate);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, 15);
-        Date testEndDate = new java.sql.Date(calendar.getTimeInMillis());
-
-        when(dm.getUser(testUser.getId())).thenReturn(testUser);
-
-        when(dm.suspendUser(testUser, testEndDate)).thenReturn(true);
-
-        Users suspendedUser = librarieService.suspendUser(testUser.getId(), testEndDate);
-
-        verify(dm).getUser(testUser.getId());
-
-        verify(dm).suspendUser(testUser, testEndDate);
-
-        assertEquals(testUser, suspendedUser);
+        assertNotNull(result);
+        assertEquals(user, result);
+        verify(dm, times(0)).deleteUser(user);
+        verify(dm, times(1)).suspendUser(user, endDate);
     }
+
+    @Test
+    public void testSuspendUserWithSuspensionCountGreaterThanOrEqualToOne() throws SQLException, UserDoesNotExistException, ClassNotFoundException {
+        int userId = 123;
+        Date endDate = new Date(System.currentTimeMillis());
+        Users user = new Users("hej","hej",3,444444);
+        user.setId(userId);
+        when(dm.getUser(userId)).thenReturn(user);
+        when(dm.getSuspensionCount(userId)).thenReturn(1);
+
+        Users result = librarieService.suspendUser(userId, endDate);
+
+        assertEquals(user, result);
+        verify(dm, times(1)).deleteUser(user);
+        verify(dm, times(0)).suspendUser(user, endDate);
+    }
+
+
 
     @Test
     public void suspendUserUserDoesNotExistException() throws SQLException, UserDoesNotExistException, ClassNotFoundException {
