@@ -132,7 +132,7 @@ public class Main {
                             ls.returnItem(loanid,loanisbn);
                             System.out.println("Returnerad!\n");
                         } catch (UserDoesNotExistException ux2) {
-                            System.out.println("Användare eller bok finns inte i systemet");
+                            System.out.println("Användare eller bok finns inte i systemet. Användare kan ha automatiskt blivit borttagen pga försening");
                         }catch (ClassNotFoundException classNotFoundException){
                             System.out.println("Fel med klasser");
                         }
