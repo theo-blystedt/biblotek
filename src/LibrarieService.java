@@ -97,15 +97,11 @@ public class LibrarieService {
                 suspendUser(id, new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(15)));
             }
         }
-
         boolean succes = dm.returnItem(user, isbn);
-
         if (!succes) {
             throw new UserDoesNotExistException(); //or book
         }
-
         dm.returnItem(user,isbn);
-
 
         return loan;
     }

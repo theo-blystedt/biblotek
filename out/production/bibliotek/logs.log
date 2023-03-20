@@ -1,0 +1,8 @@
+2023-03-15 10:47:42.712 [main] INFO  Database - användare: 2345tog bort en användare
+2023-03-20 16:22:23.928 [main] INFO  Database - användare: 2345 la till en användare
+2023-03-20 16:22:34.455 [main] INFO  Database - användare: 2345 tog bort en användare
+2023-03-20 16:22:49.872 [main] INFO  Database - användare: 2345 stängde av en användare id: 10028
+2023-03-20 16:22:59.814 [main] INFO  Database - användare: 2345 låste upp en användare
+2023-03-20 16:23:12.580 [main] INFO  Database - användare: 2345 lånade en bok till 10028
+2023-03-20 16:23:29.143 [main] INFO  Database - användare: 2345 returnerade en bok
+2023-03-20 16:23:39.077 [main] INFO  Database - användare: 2345loggade ut
